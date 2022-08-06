@@ -21,10 +21,20 @@ load(here('indata/CML.Rdata')) #contact data from Prem et al
 
 
 ## load/compile model
-fn <- here('R/estebinxkcdneat.R') #v recovery + mixing
-estebin <- odin::odin(fn,target=tgt)
-cat('--- Mix version ready -----\n')
 
+
+fn <- here('R/estebinxkcdneat.R') #vn recovery + mixing
+## estebin <- odin::odin(fn,target=tgt)
+## NOTE to allow PR code to be compliled in only when needed
+OF <- paste(readLines(fn), collapse="\n")
+if(makePR){
+  cat('***Adding in PR code!***\n')
+  fn <- here('R/estebinxkcdPR19.R')
+  PR19 <- paste(readLines(fn), collapse="\n")
+}
+estebin <- odin::odin(OF,target=tgt)
+
+cat('--- Mix version ready -----\n')
 
 
 ## ====== param functions ========
@@ -84,14 +94,14 @@ irrpars <- function(aimd,n=17){
 }
 
 
-## parameter maker (adapted from Bayreuth)
+## parameter maker
 make.estinputs <- function(aimout,aimpars,contacts=FALSE){
   ## fixed
   nage <- 17                              #number of age categories
   CA <- matrix(0,ncol=81,nrow=17)
   for(i in 1:80) CA[((i-1) %/% 5)+1,i] <- 1
   CA[nrow(CA),81] <- 1
-  colnames(CA) <- SD19::nmage
+  colnames(CA) <- XD$nmage
   xz <- seq(from=0,to=80,by=5)
   rownames(CA) <- paste0('[',xz,',',c(xz[-1]-1,Inf),')')
   CAV <- colSums((1:nrow(CA)) * CA)
@@ -274,7 +284,7 @@ BLI <- function(LL,                     #list of lists (to handle matrices/array
      xz[i],xz[i2],yz[j],yz[j2],
      x,y)
 }
-
+## NOTE edge cases? just use truncated distribution - alwasy strictly inside square
 
 
 ## function to correct alpha/HR
@@ -347,15 +357,13 @@ runwithpars <- function(parmlist,baseparms){
 
 
 ## term="IX|IH|IA", NoN for notifications
-
-## multirunner
+## getRateAge() <- in dataLL.R
+## ## multirunner
 nmvec2dt <- function(x) data.table(value=x,variable=names(x)) #utility
 
 multirun <- function(DF,baseparms,bothout=FALSE,YR=2015){
-  ansts <- ansss <- list()
-  ## TODO should be removable
-  DF[alph>.5,alph:=.49]; DF[alph<.1,alph:=.11]
-  DF[HR>.5,HR:=.49]; DF[HR<.1,HR:=.11]
+  ansts <- ansss <- PR <- list()
+  ARIS <- ARIA <- ARIF <- list()
   for(i in 1:nrow(DF)){
     if(!i%%10) print(i)
     tmp <- DF[i]
@@ -383,9 +391,43 @@ multirun <- function(DF,baseparms,bothout=FALSE,YR=2015){
     outdat <- rbindlist(list(allinc,hinc,allnote))
     outdat[,id:=i]
     ansss[[i]] <- outdat
+    ## --- ARI stuff
+    if(bothout){
+      OD <- out2df(out)
+      ## scalar ari by time
+      tmp <- OD[variable=='aris']
+      tmp[,id:=i]
+      ARIS[[i]] <- tmp
+      ## ari by age
+      tmp <- OD[year==2019][grep('ariv',variable),
+                            .(year,value=mean(value)),by=age]
+      tmp$age <- factor(tmp$age,levels=tmp$age,ordered = TRUE)
+      tmp[,id:=i]
+      ARIA[[i]] <- tmp
+      ## ari from
+      tmp <- OD[year==2019][grep('arif',variable),
+                            .(year,value=mean(value)),by=age]
+      tmp$age <- factor(tmp$age,levels=tmp$age,ordered = TRUE)
+      tmp[,value:=value/sum(value)]
+      tmp[,id:=i]
+      ARIF[[i]] <- tmp
+    }
+    ## PR stuff
+    if(makePR){
+      tmp <- getPRdata(out)
+      tmp[,id:=i]
+      PR[[i]] <- tmp
+    }
   }
   ansts <- rbindlist(ansts)
   ansss <- rbindlist(ansss)
+  if(bothout){
+    ARIS <- rbindlist(ARIS)
+    ARIA <- rbindlist(ARIA)
+    ARIF <- rbindlist(ARIF)
+  }
+  if(makePR)
+    PR <- rbindlist(PR)
   ## tmp <- ansss[,.(value=sum(value)),by=.(id,age,hstate)]
   ## tmp1 <- tmp[,.(value=sum(value)),by=.(id,age)]
   ## tmp2 <- tmp[hstate!='X',.(value=sum(value)),by=.(id,age)]
@@ -393,11 +435,16 @@ multirun <- function(DF,baseparms,bothout=FALSE,YR=2015){
   ## ansss <- rbind(tmp1,tmp2)
   setnames(ansss,'variable','age')
   ansss$age <- factor(ansss$age,levels=nagz,ordered=TRUE)
-  if(bothout==TRUE) return(list(ts=ansts,ss=ansss))
-  ansts
+  ro <- ansts
+  if(bothout==TRUE){
+    ro <- list(ts=ansts,ss=ansss)
+    ro$ARIS <- ARIS
+    ro$ARIA <- ARIA
+    ro$ARIF <- ARIF
+    if(makePR) ro$pr <- PR
+  }
+  ro #return object
 }
-
-
 ## Kish ESS calculator, from log weights
 calcess <- function(lwt){
   wt <- lwt - max(lwt)

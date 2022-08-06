@@ -206,7 +206,7 @@ if(cniso=="ALL"){
     ggsave(file=gh('plots/IRRplots/IRRcompare{cniso}.png'),h=6,w=6)
 
     ALLM[,mean(abs(1-approximate/exact))]     #0.01
-    save(ALLM,file=gh('data/IRRdata/IRRapprox{cnsio}.Rdata'))
+    save(ALLM,file=gh('data/IRRdata/IRRapprox{cniso}.Rdata'))
 
     ## ---- single parm example--------
     aimout <- AimDyn(aimpars,graph=FALSE,fullhist = TRUE,

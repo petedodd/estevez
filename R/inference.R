@@ -3,12 +3,12 @@
 args <- commandArgs(trailingOnly = TRUE)
 cniso <- as.character(args[1])
 
-useage <- TRUE #whether to use age-based likelihood or not
- 
+useage <- TRUE  #whether to use age-based likelihood or not
+makePR <- FALSE #don't include unnecessary PR ODEs for inference
 ## CDRGP <- TRUE
 ## gplen <- 0
 ## gpvsc <- 1
-cniso <- 'LSO'
+## cniso <- 'LSO'
 ## ## cniso <- 'NGA'
 
 cat('cniso  = ',cniso,'...\n')
@@ -88,14 +88,8 @@ LLpsvWithPrior(psv)
 
 ## stop()
 ## --------- inference work --------
-
-
 ndim <- length(hyperparms)
-
 print(ndim)
-## NLIVE <- 50 * ndim
-##trying < recommended based on intuition for GP REs
-## NLIVE <- 1600
 (NLIVE <- 2*max(50*ndim,ndim*(ndim+1)/2))
 ## also likes nlive > ndim*(ndim+1)/2
 
@@ -112,21 +106,14 @@ for(i in 1:nwalkers) S[i,] <- uv2ps(0.5+runif(ndim)/1e2)
 ## for(i in 1:nwalkers) SL[i] <- LLpsvWithPrior(S[i,])
 ## summary(SL)
 
-mvl <- list(
-  tuple(zs$moves$DifferentialMove(),0.5),
-  tuple(zs$moves$GlobalMove(),0.5)
-  )
-
 ## make sampler
 sampler <- zs$EnsembleSampler(as.integer(nwalkers),
                               as.integer(ndim),
-                              LLpsvWithPrior)## ,
-                              ## moves=mvl,
-                              ## light_mode=TRUE)
+                              LLpsvWithPrior)
 
 ## ---------------------------------------
 ## run sampler - shaping to be 10 hrs!
-nsteps <- 1000
+nsteps <- 1000 #TODO change this
 tt <- system.time({
   sampler$run_mcmc(start=S,nsteps=as.integer(nsteps))
 })
