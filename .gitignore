@@ -40,3 +40,6 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# chain data which could be big
+data/chains
