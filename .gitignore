@@ -41,5 +41,6 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# chain data which could be big
+# data which could be big but is generated during the analysis
 data/chains
+data/IRRdata
