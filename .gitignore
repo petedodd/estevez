@@ -44,3 +44,4 @@ vignettes/*.pdf
 # data which could be big but is generated during the analysis
 data/chains
 data/IRRdata
+plots/IRRplots

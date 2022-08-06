@@ -8,11 +8,21 @@ library(data.table)
 library(ggplot2)
 library(lhs)
 library(glue)
-source(here('R/AIMdynInc.R'))              #AIM runner
-source(here('R/getCountryParmsInc.R'))  #parameter constructer
-
 
 gh <- function(x) glue(here(x))
+
+
+source(here('R/AIMdynInc.R'))              #AIM runner
+source(here('R/getCountryParmsInc.R'))  #parameter constructer
+load(here('indata/XD.Rdata'))           #data for AIM
+
+
+## create any missing directories
+fn <- gh('plots/IRRplots')
+if(!file.exists(fn)){cat('creating ',fn,'...\n'); dir.create(fn);}
+fn <- gh('data/IRRdata')
+if(!file.exists(fn)) {cat('creating ',fn,'...\n'); dir.create(fn);}
+
 
 ## bilinear interpolation functions
 bl <- function(F11,F12,F21,F22,x1,x2,y1,y2,x,y){
@@ -34,7 +44,7 @@ BLI <- function(LL,                     #list of lists (to handle matrices/array
      xz[i],xz[i2],yz[j],yz[j2],
      x,y)
 }
-## NOTE edge cases? just use truncated distribution - always strictly inside square
+
 
 ## fixing odd last-time NA
 safety1 <- function(x){
@@ -83,7 +93,7 @@ if(cniso=="ALL"){
   irrAOdata <- list()
   for(i in 1:length(cz)){
     print(cz[i])
-    fn <- glue(here('data/AO{cz[i]}.Rdata'))
+    fn <- glue(here('data/IRRdata/AO{cz[i]}.Rdata'))
     load(fn)
     AO <- checkfixes(AO,c('irrhf','irrhm','irraf','irram'))
     irrAOdata[[cz[i]]] <- AO
@@ -95,7 +105,7 @@ if(cniso=="ALL"){
   ## compute data
   cat("......",cniso,"\n")
   ## get country to run
-  aimpars <- getCountryAimParms(cniso,eyear=2019)
+  aimpars <- getCountryAimParmsInc(cniso,eyear=2019)
   AO <- AimDyns(aimpars,graph=FALSE,alph=az,HR=hrz)
   ## str(aimpars)
   ## AO <- AimDyns(aimpars,graph=FALSE,alph=az[2],HR=hrz[2]) #test 
@@ -192,11 +202,11 @@ if(cniso=="ALL"){
 
     nrow(ALLM) # 77K
 
-    ggsave(file=gh('plots/IRRcompare{cniso}.pdf'),h=6,w=6)
-    ggsave(file=gh('plots/IRRcompare{cniso}.png'),h=6,w=6)
+    ggsave(file=gh('plots/IRRplots/IRRcompare{cniso}.pdf'),h=6,w=6)
+    ggsave(file=gh('plots/IRRplots/IRRcompare{cniso}.png'),h=6,w=6)
 
     ALLM[,mean(abs(1-approximate/exact))]     #0.01
-    save(ALLM,file=gh('data/IRRapprox{cnsio}.Rdata'))
+    save(ALLM,file=gh('data/IRRdata/IRRapprox{cnsio}.Rdata'))
 
     ## ---- single parm example--------
     aimout <- AimDyn(aimpars,graph=FALSE,fullhist = TRUE,
@@ -218,41 +228,41 @@ if(cniso=="ALL"){
       theme_classic() + ggpubr::grids()
     SV
 
-    ggsave(SV,file=gh('plots/IRR_{cniso}.pdf'),w=7,h=5)
-    ggsave(SV,file=gh('plots/IRR_{cniso}.png'),w=7,h=5)
+    ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.pdf'),w=7,h=5)
+    ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.png'),w=7,h=5)
 
   }
 
 }
 
 
-## NOTE for catch-up if bug persists in t-series output
-for(cniso in cz){
-  cat(cniso,'...\n')
+## ## NOTE for catch-up if bug persists in t-series output
+## for(cniso in cz){
+##   cat(cniso,'...\n')
 
-  fn <- gh('data/AO{cniso}.Rdata')
-  load(file=fn)
-  tz <- seq(from=min(AO$yrz),to=max(AO$yrz),by=1)
+##   fn <- gh('data/IRRdata/AO{cniso}.Rdata')
+##   load(file=fn)
+##   tz <- seq(from=min(AO$yrz),to=max(AO$yrz),by=1)
 
-  ## ---- single parm example--------
-  aimpars <- getCountryAimParms(cniso,eyear=2019)
-  aimout <- AimDyn(aimpars,graph=FALSE,fullhist = TRUE,
-                   alph=0.36,HR=0.33)
+##   ## ---- single parm example--------
+##   aimpars <- getCountryAimParmsInc(cniso,eyear=2019)
+##   aimout <- AimDyn(aimpars,graph=FALSE,fullhist = TRUE,
+##                    alph=0.36,HR=0.33)
 
-  aprx <- BLI(AO$irrhf,AO$alph,AO$HR,0.36,0.33) #HF
-  aprx <- as.data.table(exp(aprx)); aprx[,time:=tz]
-  aprxm <- melt(aprx,'time')
+##   aprx <- BLI(AO$irrhf,AO$alph,AO$HR,0.36,0.33) #HF
+##   aprx <- as.data.table(exp(aprx)); aprx[,time:=tz]
+##   aprxm <- melt(aprx,'time')
 
-  comp <- aimout$irrhf
-  comps <- comp[time %in% tz]
-  compsm <- melt(comps,'time')
+##   comp <- aimout$irrhf
+##   comps <- comp[time %in% tz]
+##   compsm <- melt(comps,'time')
 
-  SV <- ggplot(compsm,aes(time,value,col=variable,group=variable)) +
-    geom_line() +
-    geom_point(data=aprxm) +
-    ylab('Incidence rate ratio') + xlab('Year')+
-    theme_classic() + ggpubr::grids()
+##   SV <- ggplot(compsm,aes(time,value,col=variable,group=variable)) +
+##     geom_line() +
+##     geom_point(data=aprxm) +
+##     ylab('Incidence rate ratio') + xlab('Year')+
+##     theme_classic() + ggpubr::grids()
 
-  ggsave(SV,file=gh('plots/IRR_{cniso}.pdf'),w=7,h=5)
-  ggsave(SV,file=gh('plots/IRR_{cniso}.png'),w=7,h=5)
-}
+##   ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.pdf'),w=7,h=5)
+##   ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.png'),w=7,h=5)
+## }
