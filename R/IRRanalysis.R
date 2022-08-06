@@ -77,13 +77,6 @@ az <- seq(.1,.8,by=.05)
 
 ## ETH KEN LSO MOZ MWI NGA SWZ TZA UGA ZAF ZMB ZWE
 cz <- c('ETH','KEN','LSO','MOZ','MWI','NGA','SWZ','TZA','UGA','ZAF','ZMB','ZWE')
-## for(cn in cz){
-##   cat(cn,'...\n')
-##   aimpars <- getCountryAimParms(cn,eyear=2015)
-##   AO <- AimDyns(aimpars,graph=TRUE,alph=0.3,HR=0.3)
-## }
-
-
 
 
 testpart <- TRUE
@@ -98,24 +91,23 @@ if(cniso=="ALL"){
     AO <- checkfixes(AO,c('irrhf','irrhm','irraf','irram'))
     irrAOdata[[cz[i]]] <- AO
   }
-  save(irrAOdata,file=here('data/IRRdata/irrAOdata.Rdata'))
+  save(irrAOdata,file=here('data/irrAOdata.Rdata')) #NOTE large added to repo
 
 } else {
 
   ## compute data
   cat("......",cniso,"\n")
   ## get country to run
+  fn <- glue(here('data/IRRdata/AO{cniso}.Rdata'))
   aimpars <- getCountryAimParmsInc(cniso,eyear=2019)
   AO <- AimDyns(aimpars,graph=FALSE,alph=az,HR=hrz)
-  ## str(aimpars)
-  ## AO <- AimDyns(aimpars,graph=FALSE,alph=az[2],HR=hrz[2]) #test 
-  fn <- glue(here('data/IRRdata/AO{cniso}.Rdata'))
   save(AO,file=fn)
+  ## load(fn)
 
   ## for one country, do test of approximation
   if(testpart){
 
-    length(hrz)*length(az)                  #120
+    ## length(hrz)*length(az)                  #120
 
     set.seed(123)
     L <-randomLHS(50,2)
@@ -209,7 +201,7 @@ if(cniso=="ALL"){
     save(ALLM,file=gh('data/IRRdata/IRRapprox{cniso}.Rdata'))
 
     ## ---- single parm example--------
-    aimout <- AimDyn(aimpars,graph=FALSE,fullhist = TRUE,
+    aimout <- AimDynInc(aimpars,graph=FALSE,fullhist = TRUE,
                      alph=0.36,HR=0.33)
 
     aprx <- BLI(AO$irrhf,AO$alph,AO$HR,0.36,0.33) #HF
@@ -228,41 +220,10 @@ if(cniso=="ALL"){
       theme_classic() + ggpubr::grids()
     SV
 
-    ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.pdf'),w=7,h=5)
-    ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.png'),w=7,h=5)
+    ggsave(SV,file=gh('plots/IRRplots/srIRR_{cniso}.pdf'),w=7,h=5)
+    ggsave(SV,file=gh('plots/IRRplots/srIRR_{cniso}.png'),w=7,h=5)
 
   }
 
 }
 
-
-## ## NOTE for catch-up if bug persists in t-series output
-## for(cniso in cz){
-##   cat(cniso,'...\n')
-
-##   fn <- gh('data/IRRdata/AO{cniso}.Rdata')
-##   load(file=fn)
-##   tz <- seq(from=min(AO$yrz),to=max(AO$yrz),by=1)
-
-##   ## ---- single parm example--------
-##   aimpars <- getCountryAimParmsInc(cniso,eyear=2019)
-##   aimout <- AimDyn(aimpars,graph=FALSE,fullhist = TRUE,
-##                    alph=0.36,HR=0.33)
-
-##   aprx <- BLI(AO$irrhf,AO$alph,AO$HR,0.36,0.33) #HF
-##   aprx <- as.data.table(exp(aprx)); aprx[,time:=tz]
-##   aprxm <- melt(aprx,'time')
-
-##   comp <- aimout$irrhf
-##   comps <- comp[time %in% tz]
-##   compsm <- melt(comps,'time')
-
-##   SV <- ggplot(compsm,aes(time,value,col=variable,group=variable)) +
-##     geom_line() +
-##     geom_point(data=aprxm) +
-##     ylab('Incidence rate ratio') + xlab('Year')+
-##     theme_classic() + ggpubr::grids()
-
-##   ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.pdf'),w=7,h=5)
-##   ggsave(SV,file=gh('plots/IRRplots/IRR_{cniso}.png'),w=7,h=5)
-## }

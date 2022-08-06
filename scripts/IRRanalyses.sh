@@ -1,4 +1,4 @@
-bash/#! /bin
+#!/bin/bash
 ## ETH KEN LSO MOZ MWI NGA
 # SWZ TZA UGA ZAF ZMB ZWE
 
@@ -8,7 +8,7 @@ R --slave --vanilla --args < ../R/IRRanalysis.R SWZ & R --slave --vanilla --args
 
 
 # joining
-# R --slave --vanilla --args < IRRanalysis.R ALL
+# R --slave --vanilla --args < ../R/IRRanalysis.R ALL
 
 
 
