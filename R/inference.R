@@ -5,11 +5,6 @@ cniso <- as.character(args[1])
 
 useage <- TRUE  #whether to use age-based likelihood or not
 makePR <- FALSE #don't include unnecessary PR ODEs for inference
-## CDRGP <- TRUE
-## gplen <- 0
-## gpvsc <- 1
-## cniso <- 'LSO'
-## ## cniso <- 'NGA'
 
 cat('cniso  = ',cniso,'...\n')
 ## stop('testing')
@@ -22,7 +17,7 @@ zs <- import('zeus')
 tgt <- 'c'
 source(here("R/modelprep.R")) #above is actually in here NOTE est vn!
 source(here("R/dataLL.R"))    #for dataLL & prior
-load(here('data/IRRdata/irrAOdata.Rdata')) #data for bilinear interpolations
+load(here('data/irrAOdata.Rdata')) #data for bilinear interpolations
 
 ## set country here
 cniso <- glue(cniso)
@@ -32,7 +27,7 @@ cz <- c('ETH','KEN','LSO','MOZ','MWI','NGA',
 
 ## prep for this country
 aimpars <- getCountryAimParmsInc(cniso,eyear = 2019)
-## aimout <- AimDyns(aimpars,graph=FALSE,fullhist = TRUE) #here!
+## aimout <- AimDyns(aimpars,graph=FALSE,fullhist = TRUE) #
 AO <- irrAOdata[[cniso]]                #bilinear interpolation for this country
 
 ##prepare ODE parms
