@@ -79,7 +79,7 @@ makeDataLL <- function(cniso,tz){
     parr <- PA[iso3==cniso,RR]
     parr.sd <- PA[iso3==cniso,RR.sd]
   } else {ptmp <- NULL}
-  ## TODO test 1st line always OK, including multi years
+  ## NOTE  1st line always OK, including multi years
 
   function(out,## P, #removed as now no parameters needed here
            show=FALSE,age=TRUE){
@@ -140,7 +140,7 @@ qfun <- function(u,L){
   if(names(L)[1]=='shape1') x <- qbeta(u,L[[1]],L[[2]])
   if(names(L)[1]=='mean') x <- qnorm(u,L[[1]],L[[2]])
   if(names(L)[1]=='shape') x <- qgamma(u,L[[1]],scale=L[[2]])
-  if(names(L)[1]=='omega') x <- qsn(u,omega=L[[1]],alpha=L[[2]])
+  if(names(L)[1]=='omega') x <- qsn(u,omega=L[[1]],alpha=L[[2]]) #NOTE not used
   x
 }
 
@@ -152,69 +152,76 @@ qfun <- function(u,L){
 
 checker <- function(nm){
   print(qfun(c(.025,.25,.5,.75,.975),hyperparms[[nm]]))
-  qplot(qfun(runif(1e4),hyperparms[[nm]]))
+  qplot(qfun(runif(1e4),hyperparms[[nm]])) + ggtitle(nm)
 }
 
 betlist <- list(meanlog=log(20),sdlog=0.75)         #bet
 if(useage) betlist <- list(meanlog=log(10),sdlog=0.75)         #bet
 
+
 ## NOTE new hyperparms
 hyperparms <- list(
-  bet=betlist,                             #beta
-  ari0=list(meanlog=log(3e-2),sdlog=0.75),         #ari0
-  ## ari0=list(shape1=1,shape2=25),             #ari0
-  ## ari0=list(shape1=1.5,shape2=50),             #ari0
-  ## bet=list(meanlog=1.68,sdlog=0.37),         #bet
-  ## ari0=list(shape1=5,shape2=150),             #ari0
-  arig=list(meanlog=0.62, sdlog=0.068),      #arig Ragonnet
-  pp=list(meanlog=-2.837,sdlog=0.32),            #pp Ragonnet
-  eps=list(meanlog=-6.89,sdlog=0.58),           #eps Ragonnet
-  alph=list(meanlog=-1.02,sdlog=0.219),      #alph: log(.36),sqrt(.048)
-  HR=list(meanlog=-1.05,sdlog=0.115),      #HR (ART)
-  CDR=list(shape1=2,shape2=2),               #CDR 4 6
-  drnX=list(meanlog=1.1,sdlog=0.2),        #durnX log(3)
-  ## drnH=list(meanlog=-1.386,sdlog=0.75),  #durnH log(.25)
-  drnH=list(shape=7.374824,scale_alpha_binned=0.06497331), #Ku see sigma.R NOTE changed
-  v=list(shape1=20.7,shape2=77.9),          #protn Andrews
-  txf=list(shape1=2.71,shape2= 87.55),      #CFRs
+  ## --------------------------------------------------- transmission
+  bet=betlist,                                #beta
+  v=list(shape1=20.7,shape2=77.9),            #psi:protn Andrews
+  ari0=list(meanlog=log(3e-2),sdlog=0.75),    #ari0
+  ## --------------------------------------------------- progression
+  arig=list(meanlog=0.62, sdlog=0.068),       #kappa:arig Ragonnet
+  pp=list(meanlog=-2.837,sdlog=0.32),         #eps: pp Ragonnet
+  eps=list(meanlog=-6.89,sdlog=0.58),         #nu: Ragonnet
+  rel=list(meanlog=-3.95,sdlog=0.27),         #omega: relapse Crampin NOTE x-ref
+  pp04=list(shape1=5.152793,shape2=21.96717), #eps0-4: u5 progn
+  ## --------------------------------------------------- HIV/ART IRR
+  alph=list(meanlog=-1.02,sdlog=0.219),       #alph: log(.36),sqrt(.048)
+  HR=list(meanlog=-1.05,sdlog=0.115),         #rho: HR (ART)
+  ## --------------------------------------------------- detection
+  CDR=list(shape1=2,shape2=2),                    #K: CDR baseline
+  cdrdt=list(shape=0.5,scale=4e-2),               #c: cdrdt trend NOTE changed
+  OR04=list(meanlog=-0.9995206,sdlog=0.6258456),  #OR CDR u5
+  OR514=list(meanlog=-0.5668002,sdlog=0.4577016), #OR CDR 514
+  ## --------------------------------------------------- timescales
+  drnX=list(meanlog=1.1,sdlog=0.2),               #durnX log(3)
+  drnH=list(shape=7.374824,
+            scale=0.06497331),                    #Ku see sigma.R NOTE changed
+  ## --------------------------------------------------- CFRs
+  txf=list(shape1=2.71,shape2= 87.55),
   cfrn=list(shape1=25.48, shape2= 33.78),
   cfrpn=list(shape1=23.68,shape2= 6.68),
-  cfrpp=list(shape1=11.88, shape2= 12.37),
-  rel=list(meanlog=-3.95,sdlog=0.27),      #relapse Crampin NOTE notin
-  ## sigma=list(shape=3.626696,scale=0.01040186) #gamm * notes v 2010
-  ## sigma=list(shape=2.599076,scale=0.02578648), #gamm * notes v 2000
-  ## sigma=list(shape=2.599076,scale=0.02578648*2), #gamm * notes v 2000
-  ## cdrdt=list(mean=0,sd=5e-2)       #cdrdt trend
-  ## ecdrdt=list(mean=0,sd=1e-1)       #exp cdr trend
-  ## cdrdt=list(omega=5e-2,alpha=2)       #cdrdt trend skew normal
-  ## cdrdt=list(shape=1,scale=2e-2)       #cdrdt trend exp
-  cdrdt=list(shape=0.5,scale=4e-2)       #cdrdt trend exp NOTE was above
+  cfrpp=list(shape1=11.88, shape2= 12.37)
 )
-kidhps <- list(
-  OR04=list(meanlog=-0.9995206,sdlog=0.6258456),        #OR CDR u5
-  OR514=list(meanlog=-0.5668002,sdlog=0.4577016),       #OR CDR 514
-  pp04=list(shape1=5.152793,shape2=21.96717)   #u5 progn
-)
-hyperparms <- c(hyperparms,kidhps)
-## ig <- list(alpha=2,beta=0.05^2)
+## hyperparms <- c(hyperparms,kidhps)
 ig <- list(alpha=5,beta=(5-1)*0.05^2) #NOTE changed
 
-## sigma=list(meanlog=10,sdlog=1),
-## list(meanlog=log(300),sdlog=1.5),     #sigma
-## cdrdt=list(meanlog=log(5e-2),sdlog=1)       #cdrdt trend
 
+## ## --- visual checks ---
+## ## transmission
 ## checker('bet')
+## checker('v')
 ## checker('ari0')
-## checker('CDR')
-## hyperparms[['sigma']] <- list(shape=1,scale=1)
-## checker('sigma')
+## ## progrsesion
+## checker('arig')
+## checker('pp')
+## checker('eps')
 ## checker('rel')
-## checker('txf')
 ## checker('pp04')
+## ## HIV/ART IRRs
+## checker('alph')
+## checker('HR')
+## ## detection
+## checker('CDR')
+## checker('cdrdt')
 ## checker('OR04')
 ## checker('OR514')
-## checker('cdrdt')
+## ## timescales
+## checker('drnX')
 ## checker('drnH')
+## ## CFRs
+## checker('txf')
+## checker('cfrn')
+## checker('cfrpn')
+## checker('cfrpp')
+
+
 
 ## tz <- seq(from=0,to=40,by=.1)
 ## y <- -5e-2*tz*exp(-4e-2*tz)

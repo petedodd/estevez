@@ -45,7 +45,3 @@ http://creativecommons.org/licenses/by/4.0/
 
 TODO
 
-- update prev data interpretation
-- reinstate module load & longer runs (time and iter)
-- check priors
-

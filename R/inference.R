@@ -108,7 +108,7 @@ sampler <- zs$EnsembleSampler(as.integer(nwalkers),
 
 ## ---------------------------------------
 ## run sampler - shaping to be 10 hrs!
-nsteps <- 1000 #TODO change this
+nsteps <- 2000
 tt <- system.time({
   sampler$run_mcmc(start=S,nsteps=as.integer(nsteps))
 })
