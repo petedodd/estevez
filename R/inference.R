@@ -95,7 +95,6 @@ nwalkers <- 50
 S <- matrix(nrow=nwalkers,ncol=ndim)
 for(i in 1:nwalkers) S[i,] <- uv2ps(0.5+runif(ndim)/1e2)
 
-
 ## ## test S
 ## SL <- rep(NA,nwalkers)
 ## for(i in 1:nwalkers) SL[i] <- LLpsvWithPrior(S[i,])

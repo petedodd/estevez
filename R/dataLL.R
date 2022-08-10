@@ -157,8 +157,6 @@ checker <- function(nm){
 
 betlist <- list(meanlog=log(20),sdlog=0.75)         #bet
 if(useage) betlist <- list(meanlog=log(10),sdlog=0.75)         #bet
-
-
 ## NOTE new hyperparms
 hyperparms <- list(
   ## --------------------------------------------------- transmission
@@ -235,7 +233,8 @@ uv2ps <- function(u){
   for(i in 1:length(hyperparms)){
     u[i] <- qfun(u[i],hyperparms[[i]])
   }
-  u[10] <- u[10]+0.1 #shift for this (durn H)
+  k <- which(names(hyperparms)=='drnH')
+  u[k] <- u[k]+0.1 #shift for this (durn H)
   u
 }
 
@@ -264,11 +263,13 @@ prlogd <- function(x){
 
 ## parameter space vector to list for running
 ps2l <- function(x){
+  alph.k <- which(names(hyperparms)=='alph')
+  HR.k <- which(names(hyperparms)=='HR')
   ## NOTE safety
-  if(x[6] > max(AO$alph)) x[6] <- .999* max(AO$alph)
-  if(x[6] < min(AO$alph)) x[6] <- 1.001* min(AO$alph)
-  if(x[7] > max(AO$HR)) x[7] <- .999* max(AO$HR)
-  if(x[7] < min(AO$HR)) x[7] <- 1.001* min(AO$HR)
+  if(x[alph.k] > max(AO$alph)) x[alph.k] <- .999* max(AO$alph)
+  if(x[alph.k] < min(AO$alph)) x[alph.k] <- 1.001* min(AO$alph)
+  if(x[HR.k] > max(AO$HR)) x[HR.k] <- .999* max(AO$HR)
+  if(x[HR.k] < min(AO$HR)) x[HR.k] <- 1.001* min(AO$HR)
   ## make list
   y <- as.list(x[1:(length(hyperparms))])
   names(y) <- names(hyperparms)
@@ -285,6 +286,5 @@ ps2l <- function(x){
     DT * y[['cdrdt']] * exp(-DT * y[['ecdrdt']])
   y[['ecdrdt']] <- y[['cdrdt']] <- NULL
   y[['CDR']] <- invlogit(lgtcdr.traj)
-
   y
 }
