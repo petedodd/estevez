@@ -45,3 +45,6 @@ http://creativecommons.org/licenses/by/4.0/
 
 TODO
 
+- check whont
+- SWZ bug see out tail
+- see multirun end bug 

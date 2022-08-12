@@ -275,7 +275,7 @@ ps2l <- function(x){
   names(y) <- names(hyperparms)
   if(is.null(y[['drnA']]) &&
      !is.null(y[['drnH']]) && !is.null(y[['drnX']])){
-    y[['drnA']] <- sqrt(abs(y[['drnH']]*y[['drnX']])) #geom mean
+    y[['drnA']] <- sqrt(abs(y[['drnH']]*y[['drnX']])) #geomt mean
   }
 
   ##logit-linear trend

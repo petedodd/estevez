@@ -31,6 +31,7 @@ if(makePR){
   cat('***Adding in PR code!***\n')
   fn <- here('R/estebinxkcdPR19.R')
   PR19 <- paste(readLines(fn), collapse="\n")
+  OF <- paste(OF,PR19,collapse="\n")
 }
 estebin <- odin::odin(OF,target=tgt)
 
@@ -332,6 +333,7 @@ runwithpars <- function(parmlist,baseparms){
       parmlist$alph <- NULL
     }
     if('sigma' %in% names(parmlist)) parmlist$sigma <- NULL
+    if('cdrdt' %in% names(parmlist)) parmlist$cdrdt <- NULL
     if('CDR' %in% names(parmlist)){
       ##needs handling differently diff models
       if(length(parmlist$CDR)==1){ #single CDR extended
@@ -367,8 +369,6 @@ multirun <- function(DF,baseparms,bothout=FALSE,YR=2015){
   for(i in 1:nrow(DF)){
     if(!i%%10) print(i)
     tmp <- DF[i]
-    if(CDRGP)
-      tmp <- ps2l(unlist(tmp)) #if GP for CDR, need to revise
     out <- runwithpars(tmp,baseparms)
     ## timeseries
     outd <- as.data.table(out[,c('t','Itot','Ntot','NtotH',
@@ -445,6 +445,7 @@ multirun <- function(DF,baseparms,bothout=FALSE,YR=2015){
   }
   ro #return object
 }
+
 ## Kish ESS calculator, from log weights
 calcess <- function(lwt){
   wt <- lwt - max(lwt)

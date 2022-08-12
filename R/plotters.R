@@ -1,6 +1,5 @@
 ## various plotting utilities & also utilities for processing output data
 
-
 absspace <- function(x,...) {             #works
    format(abs(x), ..., big.mark=" ",scientific = FALSE, trim = TRUE)
 }
@@ -9,7 +8,7 @@ absspace <- function(x,...) {             #works
 ##  ===================== DATA FORMATTING ============
 ## turn odin model output into sensible data table
 out2df <- function(out){
-  nmz <- grep('DA|DH|DX|XLL|HLL|ALL|XLR|HLR|ALR|XU|HU|AU|XR|HR|AR|aris|IreactX|IrelX|TA|TH|TX|Inn|Ipn|Ipp|Itot|prevtot15plus|prevTtot15plus|pop15plus|Ntot|NtotH|NtotA|poptot|popart|poph|poph1549|pop1549|mort|mortH',
+  nmz <- grep('DA|DH|DX|XLL|HLL|ALL|XLR|HLR|ALR|XU|HU|AU|XR|HR|AR|aris|IreactX|IrelX|TA|TH|TX|Inn|Ipn|Ipp|Itot|prevtot15plus|prevTtot15plus|pop15plus|Ntot|NtotH|NtotA|poptot|popart|poph|poph1549|pop1549|mort|mortH|ariv|arif',
               colnames(out),value=TRUE)
   nmz <- c('t',nmz)
   outdat <- out[,nmz]
@@ -35,8 +34,48 @@ out2df <- function(out){
   outdat[grep(",2",variable),sex:='F']
   outdat[,acat:=as.integer(gsub(".+\\[(\\d+),\\d+\\]","\\1",variable))] #age
   outdat[,age:=agz[acat]]
+  ## and any vectors left
+  outdat[is.na(age),acat:=as.integer(gsub(".+\\[(\\d+)\\]","\\1",variable))] #age
+  outdat[is.na(age),age:=agz[acat]]
   outdat
 }
+
+
+## grabbing PRs
+## revised version with 2 time periods
+getPRdata <- function(out){
+  if(!'rIA[17,2]' %in% colnames(out)) stop('PR data is missing! Likely compiled not including these equations - check relevant flag.')
+  nmz <- grep('rIX|rIH|rIA|IX|IH|IA|r2IX|r2IH|r2IA',
+              colnames(out),value=TRUE)
+  nmz <- c('t',nmz)
+  ## r2z <- nmz[grepl('r2',nmz)]
+  nmz19 <- nmz## [!nmz %in% r2z]
+  ## nmz00 <- gsub("r","r2",nmz19)
+  t19 <- which.min(abs(out[,'t']-2019))
+  ## t00 <- which.min(abs(out[,'t']-2000))
+  outdat19 <- out[t19,nmz19]
+  ## outdat00 <- out[t00,nmz00]
+  outdat19 <- data.table(variable=nmz19,value=outdat19,year=2019)
+  ## outdat00 <- data.table(variable=nmz19,value=outdat00,year=2000)
+  outdat <- rbind(outdat19[variable!='t']## ,outdat00[variable!='t'] 
+                  )
+  ## add in relevant variables
+  outdat[,sex:='M']                       #sex
+  outdat[grep(",2",variable),sex:='F']
+  outdat[,acat:=as.integer(gsub(".+\\[(\\d+),\\d+\\]","\\1",variable))] #age
+  outdat[,age:=agz[acat]]
+  outdat[,c('acat'):=NULL]
+  outdat[,horizon:='all']
+  outdat[grep('r',variable),horizon:='recent']
+  outdat[,hiv:='X']
+  outdat[grep('H',variable),hiv:='H']
+  outdat[grep('A',variable),hiv:='A']
+  outdat <- dcast(outdat,year+sex+age+hiv~horizon,value.var = 'value')
+  outdat
+}
+
+## otter <- getPRdata(out)
+
 
 ## make age/sex splits of TBI
 makeTBA <- function(out){
@@ -245,3 +284,4 @@ TBAplots <- function(rootname,outdat,yr){
         scale_y_continuous(label=absspace)
     ggsave(GP,file=fn); print(fn)
 }
+
