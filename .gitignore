@@ -1,6 +1,9 @@
 # if on macs
 .DS_Store
 
+#HPC logs
+logs/
+
 # History files
 .Rhistory
 .Rapp.history

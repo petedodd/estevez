@@ -1,2 +1,2 @@
 #!/bin/bash
-R --slave < R/statsurmize.R
+R --slave < ../R/statsurmize.R
