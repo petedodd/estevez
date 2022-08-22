@@ -110,7 +110,7 @@ if(cniso=="ALL"){
     ## length(hrz)*length(az)                  #120
 
     set.seed(123)
-    L <-randomLHS(50,2)
+    L <- randomLHS(50,2)
     tz <- seq(from=min(AO$yrz),to=max(AO$yrz),by=1)
 
     colnames(L) <- c('alph','HR')
@@ -123,7 +123,8 @@ if(cniso=="ALL"){
     for(i in 1:nrow(L)){
       print(i)
       ## run main model
-      tst <- AimDyns(aimpars,graph=FALSE,fullhist = TRUE,alph=L[i,'alph'],HR=L[i,'HR'])
+      tst <- AimDyns(aimpars,graph=FALSE,fullhist = TRUE,
+                     alph=L[i,'alph'],HR=L[i,'HR'])
       ansaf[[i]] <- tst$irraf[time %in% tz]
       ansam[[i]] <- tst$irram[time %in% tz]
       anshf[[i]] <- tst$irrhf[time %in% tz]
@@ -184,7 +185,9 @@ if(cniso=="ALL"){
 
     ALLM <- melt(ALL,id.vars = c('time','repn','calculation','art','sex'))
     ALLM <- ALLM[value>1e-6]
-    ALLM <- dcast(ALLM, time + art + sex + repn + variable ~ calculation,value.var = 'value')
+    ALLM <- dcast(ALLM,
+                  time + art + sex + repn + variable ~ calculation,
+                  value.var = 'value')
 
     ggplot(ALLM,aes(exact,approximate),) +
       geom_point(shape=1,alpha=0.3) +

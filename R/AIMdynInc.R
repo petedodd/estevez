@@ -120,9 +120,8 @@ AimDynInc <- function(P,graph=FALSE,fullhist=FALSE,
         man[,,,2:3] <- man[,,,2:3] * rr1[whoy] #ART < 12 mo
         man[,,,4] <- man[,,,4] * rr2[whoy] #ART >= 12 mo
       }
-
-      if(any(X<0)) X[X<0] <- 0 #safety
     }
+    if(any(X<0)) X[X<0] <- 0 #safety
 
     ## recording
     if(fullhist){

@@ -194,8 +194,8 @@ make.estinputs <- function(aimout,aimpars,contacts=FALSE){
                WWP[hiv=='hiv+ve' & art=='ART-ve',.(year,sex,ages,pop)],
                by=c('year','ages','sex'))
   tmp[,vr:=1e3*value/(pop+1e-10)]
-  tmp[,vrn:=vr/max(vr),by=.(year)]#,sex)] # normalize
-  tmp2 <- tmp[,.(rra=mean(vrn,na.rm=TRUE)),by=.(sex,ages)]
+  tmp[,vrn:=vr/(max(vr)),by=.(year)]#,sex)] # normalize
+  tmp2 <- tmp[is.finite(vrn),.(rra=mean(vrn,na.rm=TRUE)),by=.(sex,ages)]
   tmp2c <- dcast(tmp2,ages~sex,value.var='rra')
   rra <- as.matrix(tmp2c[,.(M,F)])         #relative rate of ART starts
   dim(moUfD)
