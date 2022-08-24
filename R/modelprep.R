@@ -371,12 +371,13 @@ multirun <- function(DF,baseparms,bothout=FALSE,YR=2015){
     tmp <- DF[i]
     out <- runwithpars(tmp,baseparms)
     ## timeseries
-    outd <- as.data.table(out[,c('t','Itot','Ntot','NtotH',
-                                'poptot','poph','popart',
-                                'poph1549',"pop1549",
-                                'Ipn','Ipp',
-                                'prevtot15plus','pop15plus',
-                                'mort','mortA','mortH')])
+    outr <- out[,c('t','Itot','Ntot','NtotH',
+                   'poptot','poph','popart',
+                   'poph1549',"pop1549",
+                   'Ipn','Ipp',
+                   'prevtot15plus','pop15plus',
+                   'mort','mortA','mortH')]
+    outd <- as.data.table(outr)
     outd[,id:=i]
     ansts[[i]] <- outd
     ## -- snapshots

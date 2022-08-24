@@ -10,6 +10,19 @@ http://creativecommons.org/licenses/by/4.0/
 
 ![http://creativecommons.org/licenses/by/4.0/](https://i.creativecommons.org/l/by/4.0/88x31.png)
 
+
+## Download
+
+The repository is relatively large due to some of the output data.
+It might therefore be preferable to download using
+
+```
+git clone --depth 1 git@github.com:petedodd/estevez.git
+```
+
+which will only keep the most recent file versions, and should allow everything to run. Alternatively, GitHub allows download as a zip file, but this will be substantially larger since it includes previous versions of output data.
+
+
 ## Directory structure
 
 ```
@@ -46,4 +59,4 @@ http://creativecommons.org/licenses/by/4.0/
 TODO
 
 - check whont
-- see multirun end bug 
+
