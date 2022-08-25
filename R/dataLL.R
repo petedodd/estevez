@@ -10,6 +10,7 @@ load(here('indata/fitdata/PA.Rdata'))
 load(here('indata/fitdata/HF.Rdata'))
 
 nagz <- c('0-4','5-14','15-24','25-34','35-44','45-54','55-64','65+')
+epfac <- 0.83
 
 ## select and aggregate columns for incidence by age
 getRateAge <- function(OM,term="IX|IH|IA"){ #NoN for notifications
@@ -87,7 +88,7 @@ makeDataLL <- function(cniso,tz){
     LL <- c(notes=0,prev=0,hiv=0,preva=0)
     ## notifications over time
     ## print(notes)
-    enotes <- out[whont,'Ntot']
+    enotes <- out[whont,'Ntot']/epfac #inflate for EPTB
     ## LL[1] <-  - sum((enotes - notes)^2/(2*(notesfac*P$sigma)^2)) -
     ##   (notelen) * log(P$sigma)
     E <- sum((enotes - notes)^2)/(2*notesfac^2)
@@ -99,7 +100,7 @@ makeDataLL <- function(cniso,tz){
       ## p^2(x-y)^2/(2*p*blah)
       Eu <- sum((1-kf)*(enotes - notes)^2)/(2*notesfac^2)
       ## --- age known part
-      modelnotes <- getRateAge(out,term="NoN")[whont,-1]
+      modelnotes <- getRateAge(out,term="NoN")[whont,-1]/epfac
       SE <- (kf*modelnotes - nmtmp)^2 #multiplied by known frac
       ## want var multiplied by 1/ncol
       SSE <- rowSums(SE) / (2*notesfac^2/ncol(SE))
