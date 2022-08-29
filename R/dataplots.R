@@ -5,7 +5,7 @@ library(ggthemes)
 library(scales)
 ## library(ggdist)
 library(ggpubr)
-library(GGally)
+## library(GGally)
 library(ggrepel)
 library(grid)
 library(ggthemes)
@@ -108,6 +108,9 @@ parmkey <- data.frame(model=modpmnmz,
                       stringsAsFactors = FALSE)
 
 parmkey <- as.data.table(parmkey)
+save(parmkey,file=here('data/parmkey.Rdata'))
+
+
 
 ## ====================== PLOTTING FUNCTIONS ===============
 HML <- function(x){
@@ -115,23 +118,23 @@ HML <- function(x){
 }
 
 
-## ## ============== inference outputs ==============
-## MakeInfPlots <- function(cniso){
-##   ## load data
-##   sminf <- glue(here('data/sampe_{cniso}_TRUE_{gplen}_1.Rdata'))
-##   load(sminf)
-##   if(useunicode){
-##     setnames(sampe,old=modpmnmz,new=parmlabs)
-##     setcolorder(sampe,der)
-##   }
+## ============== inference outputs ==============
+MakeInfPlots <- function(cniso){
+  ## load data
+  sminf <- glue(here('data/sampe_{cniso}.Rdata'))
+  load(sminf)
+  if(useunicode){
+    setnames(sampe,old=modpmnmz,new=parmlabs)
+    setcolorder(sampe,der)
+  }
 
-##   ## pairs plot
-##   PP <- ppairs(sampe)
-##   ppfn <- glue(here('plots/npi_PP_{cniso}_{gplen}.pdf'))
+  ## pairs plot
+  PP <- ppairs(sampe)
+  ppfn <- glue(here('plots/corner/npi_PP_{cniso}.pdf'))
 
-##   ## save
-##   ggsave(PP,file=ppfn,w=10,h=10,device = cairo_pdf)
-## }
+  ## save
+  ggsave(PP,file=ppfn,w=10,h=10,device = cairo_pdf)
+}
 
 
 
@@ -168,144 +171,143 @@ prepOD <- function(OD,cniso){
   list(pops=pops,popsr=popsr,PT=PT,PH=PH,PA=PA,PTD=PTD)
 }
 
+test <- prepOD(OD,cniso)
 
-## prepHdata <- function(cniso){
-##   ## HIV/ART data
-##   HAdata <- data.table(
-##     iso3=cniso,
-##     year=XD[[cniso]]$y2,
-##     mlhiv=XD[[cniso]]$mh,
-##     flhiv=XD[[cniso]]$fh,
-##     artm=XD[[cniso]]$ma,
-##     artf=XD[[cniso]]$fa
-##   )
-##   HAdata[,plhiv:=(mlhiv+flhiv)]
-##   HAdata[,art:=(artm*mlhiv+artf*flhiv)/(plhiv)]
-##   HAdata <- merge(HAdata,
-##                   data.table(iso3=cniso,
-##                              year=XD[[cniso]]$y3,
-##                              hp80pc=XD[[cniso]]$hp80pc),
-##                   by=c('iso3','year'),all=TRUE)
+prepHdata <- function(cniso){
+  ## HIV/ART data
+  HAdata <- data.table(
+    iso3=cniso,
+    year=XD[[cniso]]$y2,
+    mlhiv=XD[[cniso]]$mh,
+    flhiv=XD[[cniso]]$fh,
+    artm=XD[[cniso]]$ma,
+    artf=XD[[cniso]]$fa
+  )
+  HAdata[,plhiv:=(mlhiv+flhiv)]
+  HAdata[,art:=(artm*mlhiv+artf*flhiv)/(plhiv)]
+  HAdata <- merge(HAdata,
+                  data.table(iso3=cniso,
+                             year=XD[[cniso]]$y3,
+                             hp80pc=XD[[cniso]]$hp80pc),
+                  by=c('iso3','year'),all=TRUE)
 
-##   HAdata
-## }
+  HAdata
+}
 
-## ## === pop & HIV time-series
-## ## MR or TBP type input
-## make.poph.plt <- function(cniso,  #country
-##                           OD,     #model run
-##                           SY=1980, #start year
-##                           na.rm=FALSE
-##                           ){
-##   ## prepare model input data
-##   odprep <- prepOD(OD,cniso)
-##   list2env(odprep,envir = environment())
+## === pop & HIV time-series
+## MR or TBP type input
+make.poph.plt <- function(cniso,  #country
+                          OD,     #model run
+                          SY=1980, #start year
+                          na.rm=FALSE
+                          ){
+  ## prepare model input data
+  odprep <- prepOD(OD,cniso)
+  list2env(odprep,envir = environment())
 
-##   ## merge HIV data against pop
-##   HAdata <- prepHdata(cniso)
-##   HD <- merge(HAdata,pops,by='year',all.y=FALSE,all.x = TRUE)
-##   HDH <- HD[hp80pc>0,.(year,value=hp80pc*pop15plus)][!is.na(value)]
-##   HDA <- HD[art>0,.(year,value=art*poph/1e2)][!is.na(value)]
+  ## merge HIV data against pop
+  HAdata <- prepHdata(cniso)
+  HD <- merge(HAdata,pops,by='year',all.y=FALSE,all.x = TRUE)
+  HDH <- HD[hp80pc>0,.(year,value=hp80pc*pop15plus)][!is.na(value)]
+  HDA <- HD[art>0,.(year,value=art*poph/1e2)][!is.na(value)]
 
-##   ## plot
-##   Dt <- ggplot(PT,aes(year,value))+
-##     geom_line()+
-##     geom_line(data=PH,col=2)+
-##     geom_line(data=PA,col=3)+
-##     geom_point(data=HDA,col='green',shape=1)+
-##     geom_point(data=HDH,col='red',shape=1)+
-##     scale_y_sqrt(label=absspace)+
-##     scale_x_continuous(limits=c(SY,NA))+
-##     geom_point(data=PTD,pch=1)+
-##     ylab('Population')+xlab('Year')+
-##     theme_classic()+ggpubr::grids()
-##   Dt
-
-## }
+  ## plot
+  Dt <- ggplot(PT,aes(year,value))+
+    geom_line()+
+    geom_line(data=PH,col=2)+
+    geom_line(data=PA,col=3)+
+    geom_point(data=HDA,col='green',shape=1)+
+    geom_point(data=HDH,col='red',shape=1)+
+    scale_y_sqrt(label=absspace)+
+    scale_x_continuous(limits=c(SY,NA))+
+    geom_point(data=PTD,pch=1)+
+    ylab('Population')+xlab('Year')+
+    theme_classic()+ggpubr::grids()
+  Dt
+}
 
 ## ## ## -----------------
 
 ## ## make.poph.plt(cniso,OD)
 
-## ## === pop snapshot
-## make.popsnap.plt <- function(cniso,OD){
-##   ## TODO year as an argument?
-##   ## TODO choose where tickmarks are!
-##   yr <- 2015
-##   myrs <- OD[,unique(year)] #model years
-##   myr <- myrs[which.min(abs(myrs-yr))] #model year closest yr
-##   ## model data
-##   DA <- OD[tbstate=='no TB' & year==myr & !is.na(age),
-##            .(value=sum(value)),by=.(age,sex)]
-##   DA[,Age:=(gsub(",","-",gsub("\\[|\\)","",age)))]
-##   DA[grepl('Inf',Age),Age:="80+"]
-##   setkey(DA,age)
-##   nags <- DA[agz][sex=='F']$Age
-##   DA$Age <- factor(DA$Age,levels=nags,ordered = TRUE)
-##   ## real data
-##   DAD <- N80[iso3==cniso & Year==yr]
-##   DAD <- melt(DAD[,.(Age=AgeGrp,M=PopMale,F=PopFemale)],id='Age')
-##   names(DAD)[names(DAD)=='variable'] <- 'sex'
-##   mx <- DA[,max(value)] #make breaks
-##   x <- floor(log10(mx))
-##   y <- ceiling(mx /10^x)
-##   y <- seq(from=1,to=4,length.out = 2) #not too many
-##   bks <- y*10^x;bks <- c(-bks,bks)
+## === pop snapshot
+make.popsnap.plt <- function(cniso,OD){
+  ## TODO choose where tickmarks are!
+  yr <- 2015
+  myrs <- OD[,unique(year)] #model years
+  myr <- myrs[which.min(abs(myrs-yr))] #model year closest yr
+  ## model data
+  DA <- OD[tbstate=='no TB' & year==myr & !is.na(age),
+           .(value=sum(value)),by=.(age,sex)]
+  DA[,Age:=(gsub(",","-",gsub("\\[|\\)","",age)))]
+  DA[grepl('Inf',Age),Age:="80+"]
+  setkey(DA,age)
+  nags <- DA[agz][sex=='F']$Age
+  DA$Age <- factor(DA$Age,levels=nags,ordered = TRUE)
+  ## real data
+  DAD <- N80[iso3==cniso & Year==yr]
+  DAD <- melt(DAD[,.(Age=AgeGrp,M=PopMale,F=PopFemale)],id='Age')
+  names(DAD)[names(DAD)=='variable'] <- 'sex'
+  mx <- DA[,max(value)] #make breaks
+  x <- floor(log10(mx))
+  y <- ceiling(mx /10^x)
+  y <- seq(from=1,to=4,length.out = 2) #not too many
+  bks <- y*10^x;bks <- c(-bks,bks)
 
-##   ## graph
-##   Ds <- ggplot(data=DA,aes(x=Age,fill=sex))+
-##     geom_bar(data=DA,aes(y=ifelse(sex=='M',value,-value)),
-##              stat='identity') +
-##     coord_flip()+geom_abline(intercept=0,slope=0) +
-##     ylab('Population') + xlab('Age') +
-##     theme(axis.text.y = element_text(size = rel(0.6))) +
-##     scale_y_continuous(label=absci_10,breaks=bks)+
-##     geom_point(data=DAD,
-##                aes(y=ifelse(sex=='M',1e3*value,-1e3*value)),
-##                shape=1)+
-##     theme_minimal()+
-##     theme(legend.position = "none",
-##           axis.text.x=element_text(size=rel(0.75)))
-##   Ds
-## }
+  ## graph
+  Ds <- ggplot(data=DA,aes(x=Age,fill=sex))+
+    geom_bar(data=DA,aes(y=ifelse(sex=='M',value,-value)),
+             stat='identity') +
+    coord_flip()+geom_abline(intercept=0,slope=0) +
+    ylab('Population') + xlab('Age') +
+    theme(axis.text.y = element_text(size = rel(0.6))) +
+    scale_y_continuous(label=absci_10,breaks=bks)+
+    geom_point(data=DAD,
+               aes(y=ifelse(sex=='M',1e3*value,-1e3*value)),
+               shape=1)+
+    theme_minimal()+
+    theme(legend.position = "none",
+          axis.text.x=element_text(size=rel(0.75)))
+  Ds
+}
 
 
 ## ## make.popsnap.plt(cniso,OD)
 
 
-## ## === prevalence
-## make.prev.plt <- function(cniso,MR,na.rm=FALSE){
-##   tmp <- P[cniso][sex=='all' & acat=='all' & case.type=='a']
-##   tmp[,type:='prevalence']
-##   clz <- c('prevalence'='purple')
-##   if('year' %in% names(MR) & !'t' %in% names(MR)) MR[,t:=year]
-##   MRL <- copy(MR)
-##   MRL[,type:="prevalence"]
-##   MRLM <- MRL[,.(value=median(1e5*prevtot15plus/pop15plus,na.rm=na.rm),
-##                  lo=quantile(1e5*prevtot15plus/pop15plus,0.025,na.rm=na.rm),
-##                  hi=quantile(1e5*prevtot15plus/pop15plus,0.975,na.rm=na.rm)),
-##               by=.(t,type)]
-##   Pplt <- ggplot(MRLM,aes(t,y=value,ymin=lo,ymax=hi,
-##                          col=type,fill=type))
-##   if('id' %in% names(MR)){
-##     Pplt <- Pplt + geom_ribbon(alpha=0.2,col=NA)+
-##       geom_line()
-##   } else {
-##     Pplt <- Pplt + geom_line()
-##   }
-##   Pplt <- Pplt +
-##     scale_fill_manual(values=clz,guide="none")+
-##     scale_color_manual(values=clz,guide="none")+
-##     scale_x_continuous(limits=c(1980,NA))+
-##     geom_pointrange(data=tmp,## size=1,
-##                     aes(x=year,y=prev,ymin=prev.lo,ymax=prev.hi),
-##                     col="purple")+
-##     expand_limits(y=0) +
-##     theme_classic()+
-##     ylab('Adult TB prevalence per 100,000') + xlab('Year')+
-##     ggpubr::grids()
-##   Pplt
-## }
+## === prevalence
+make.prev.plt <- function(cniso,MR,na.rm=FALSE){
+  tmp <- P[cniso][sex=='all' & acat=='all' & case.type=='a']
+  tmp[,type:='prevalence']
+  clz <- c('prevalence'='purple')
+  if('year' %in% names(MR) & !'t' %in% names(MR)) MR[,t:=year]
+  MRL <- copy(MR)
+  MRL[,type:="prevalence"]
+  MRLM <- MRL[,.(value=median(1e5*prevtot15plus/pop15plus,na.rm=na.rm),
+                 lo=quantile(1e5*prevtot15plus/pop15plus,0.025,na.rm=na.rm),
+                 hi=quantile(1e5*prevtot15plus/pop15plus,0.975,na.rm=na.rm)),
+              by=.(t,type)]
+  Pplt <- ggplot(MRLM,aes(t,y=value,ymin=lo,ymax=hi,
+                         col=type,fill=type))
+  if('id' %in% names(MR)){
+    Pplt <- Pplt + geom_ribbon(alpha=0.2,col=NA)+
+      geom_line()
+  } else {
+    Pplt <- Pplt + geom_line()
+  }
+  Pplt <- Pplt +
+    scale_fill_manual(values=clz,guide="none")+
+    scale_color_manual(values=clz,guide="none")+
+    scale_x_continuous(limits=c(1980,NA))+
+    geom_pointrange(data=tmp,## size=1,
+                    aes(x=year,y=prev,ymin=prev.lo,ymax=prev.hi),
+                    col="purple")+
+    expand_limits(y=0) +
+    theme_classic()+
+    ylab('Adult TB prevalence per 100,000') + xlab('Year')+
+    ggpubr::grids()
+  Pplt
+}
 
 ## ## make.prev.plt(cniso,MR$ts)
 
@@ -325,40 +327,38 @@ prepOD <- function(OD,cniso){
 
 ## ## ========  Age patterns
 
-
-## make.Age.inc.plt <- function(cniso,MR,narm=FALSE){
-##   clz <- c('total'='blue','HIV'='red')
-##   MR[,acat:=age]
-##   MRM <- MR[,.(value=median(value/epfac,na.rm=narm),
-##                lo=quantile(value/epfac,0.025,na.rm=narm),
-##                hi=quantile(value/epfac,0.975),na.rm=narm),
-##                by=.(acat,qty,type)]
-##   ## notification data
-##   tmpn <- NAS[cniso]
-##   tmpn <- tmpn[,.(value=sum(value)),by=.(year,acat)]
-##   tmpn <- tmpn[year==2015]
-##   tmpn[,c('type'):=NA]
-##   ## -- make plot
-##   Plt <- ggplot(MRM[qty!='notifications'],
-##                 aes(acat,value,group=type,
-##                     col=type,fill=type))+
-##     expand_limits(y=0)+
-##     geom_ribbon(aes(ymin=lo,ymax=hi),alpha=0.2,color=NA)+
-##     geom_line()+geom_point()+
-##     scale_fill_manual(values = clz,guide="none")+
-##     scale_color_manual(values = clz,guide="none")+
-##     ylab('TB incidence')+ xlab('Age category')+
-##     scale_y_continuous(label=absspace)+
-##     geom_point(data=tmpn,aes(acat,value),shape=1,col=1,size=2)+
-##     theme_classic()+ggpubr::grids() +
-##     theme(legend.position = "none",
-##           axis.text.x = element_text(angle = 45, vjust = 1.0, hjust=1))
-##   Plt
-## }
+make.Age.inc.plt <- function(cniso,MR,narm=FALSE){
+  clz <- c('total'='blue','HIV'='red')
+  MR[,acat:=age]
+  MRM <- MR[,.(value=median(value/epfac,na.rm=narm),
+               lo=quantile(value/epfac,0.025,na.rm=narm),
+               hi=quantile(value/epfac,0.975),na.rm=narm),
+               by=.(acat,qty,type)]
+  ## notification data
+  tmpn <- NAS[cniso]
+  tmpn <- tmpn[,.(value=sum(value)),by=.(year,acat)]
+  tmpn <- tmpn[year==2015]
+  tmpn[,c('type'):=NA]
+  ## -- make plot
+  Plt <- ggplot(MRM[qty!='notifications'],
+                aes(acat,value,group=type,
+                    col=type,fill=type))+
+    expand_limits(y=0)+
+    geom_ribbon(aes(ymin=lo,ymax=hi),alpha=0.2,color=NA)+
+    geom_line()+geom_point()+
+    scale_fill_manual(values = clz,guide="none")+
+    scale_color_manual(values = clz,guide="none")+
+    ylab('TB incidence')+ xlab('Age category')+
+    scale_y_continuous(label=absspace)+
+    geom_point(data=tmpn,aes(acat,value),shape=1,col=1,size=2)+
+    theme_classic()+ggpubr::grids() +
+    theme(legend.position = "none",
+          axis.text.x = element_text(angle = 45, vjust = 1.0, hjust=1))
+  Plt
+}
 
 
 ## ## make.Age.inc.plt(cniso,MR$ss)
-## ## ggsave(here('plots/test.pdf'),w=5,h=5)
 
 ## ## MR$ss$age <- factor(MR$ss$age,levels=agz,ordered=TRUE)
 
@@ -431,57 +431,57 @@ prepOD <- function(OD,cniso){
 
 ## ## tt <- make.WHOcompare.data(cniso,MR$ts)
 
-## ## time-series
-## make.NI.plt <- function(cniso,MR,WHO=FALSE,narm=FALSE){
-##   if('year' %in% names(MR) & !'t' %in% names(MR)) MR[,t:=year]
-##   MRM <- melt(MR[,.(t,
-##                     Itot=Itot/epfac,
-##                     Ntot=Ntot/epfac,
-##                     NtotH=NtotH/epfac)],id='t')
-##   MRMM <- MRM[,.(value=median(value,na.rm=narm),
-##                  hi=quantile(value,.975,na.rm=narm),
-##                  lo=quantile(value,.025,na.rm=narm)),
-##               by=.(t,variable)]
-##   ## print(MRMM)
-##   clz <- c('Itot'='blue','Ntot'='black',
-##            'NtotH'='red','NtotA'='green')
-##   tmp <- merge(NT[cniso],E[cniso],by='year',all=TRUE)
-##   etmp <- melt(tmp[,.(t=year,Itot=e_inc_num,NtotH=e_inc_tbhiv_num)],
-##                id='t')
-##   eih <- melt(tmp[,.(t=year,Itot=e_inc_num_hi)],id='t')
-##   eil <- melt(tmp[,.(t=year,Itot=e_inc_num_lo)],id='t')
-##   dtmp <- melt(tmp[,.(t=year,Ntot=c_newinc,
-##                       NtotH=newrel_hivpos,NtotA=newrel_art)],
-##                id='t')
+## time-series
+make.NI.plt <- function(cniso,MR,WHO=FALSE,narm=FALSE){
+  if('year' %in% names(MR) & !'t' %in% names(MR)) MR[,t:=year]
+  MRM <- melt(MR[,.(t,
+                    Itot=Itot/epfac,
+                    Ntot=Ntot/epfac,
+                    NtotH=NtotH/epfac)],id='t')
+  MRMM <- MRM[,.(value=median(value,na.rm=narm),
+                 hi=quantile(value,.975,na.rm=narm),
+                 lo=quantile(value,.025,na.rm=narm)),
+              by=.(t,variable)]
+  ## print(MRMM)
+  clz <- c('Itot'='blue','Ntot'='black',
+           'NtotH'='red','NtotA'='green')
+  tmp <- merge(NT[cniso],E[cniso],by='year',all=TRUE)
+  etmp <- melt(tmp[,.(t=year,Itot=e_inc_num,NtotH=e_inc_tbhiv_num)],
+               id='t')
+  eih <- melt(tmp[,.(t=year,Itot=e_inc_num_hi)],id='t')
+  eil <- melt(tmp[,.(t=year,Itot=e_inc_num_lo)],id='t')
+  dtmp <- melt(tmp[,.(t=year,Ntot=c_newinc,
+                      NtotH=newrel_hivpos,NtotA=newrel_art)],
+               id='t')
 
-##   ## plot
-##   NIplt <- ggplot(MRMM,aes(t,y=value,
-##                            col=variable,fill=variable))
-##   if('id' %in% names(MR)){
-##     NIplt <- NIplt +
-##       geom_ribbon(aes(ymin=lo,ymax=hi),alpha=.2,col=NA)+geom_line()
-##   } else {
-##     NIplt <- NIplt + geom_line()
-##   }
-##   NIplt <- NIplt +
-##     scale_fill_manual(values = clz,guide="none")+
-##     scale_color_manual(values = clz,guide="none")+
-##     scale_y_continuous(label=absspace,limits=c(0,NA))+
-##     scale_x_continuous(limits=c(1980,NA))+
-##     ylab('TB cases')+xlab('Year')+
-##     theme_classic() + ggpubr::grids()+
-##     geom_point(data=dtmp[variable=='NtotA'],
-##                alpha=1,shape=1,size=2,col='green')+
-##     geom_point(data=dtmp[variable=='NtotH'],
-##                alpha=1,shape=1,size=2,col='red')+
-##     geom_point(data=dtmp[variable=='Ntot'],
-##                alpha=1,shape=1,size=2,col='black')
-##   if(WHO)
-##     NIplt <- geom_line(data=etmp[variable!='NtotH'],alpha=1,lty=2)+
-##       geom_line(data=eih,alpha=1,lty=3)+
-##       geom_line(data=eil,alpha=1,lty=3)
-##   NIplt
-## }
+  ## plot
+  NIplt <- ggplot(MRMM,aes(t,y=value,
+                           col=variable,fill=variable))
+  if('id' %in% names(MR)){
+    NIplt <- NIplt +
+      geom_ribbon(aes(ymin=lo,ymax=hi),alpha=.2,col=NA)+geom_line()
+  } else {
+    NIplt <- NIplt + geom_line()
+  }
+  NIplt <- NIplt +
+    scale_fill_manual(values = clz,guide="none")+
+    scale_color_manual(values = clz,guide="none")+
+    scale_y_continuous(label=absspace,limits=c(0,NA))+
+    scale_x_continuous(limits=c(1980,NA))+
+    ylab('TB cases')+xlab('Year')+
+    theme_classic() + ggpubr::grids()+
+    geom_point(data=dtmp[variable=='NtotA'],
+               alpha=1,shape=1,size=2,col='green')+
+    geom_point(data=dtmp[variable=='NtotH'],
+               alpha=1,shape=1,size=2,col='red')+
+    geom_point(data=dtmp[variable=='Ntot'],
+               alpha=1,shape=1,size=2,col='black')
+  if(WHO)
+    NIplt <- geom_line(data=etmp[variable!='NtotH'],alpha=1,lty=2)+
+      geom_line(data=eih,alpha=1,lty=3)+
+      geom_line(data=eil,alpha=1,lty=3)
+  NIplt
+}
 
 ## ## make.NI.plt(cniso,MR$ts)
 
