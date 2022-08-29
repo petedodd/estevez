@@ -17,7 +17,7 @@ library(ggplot2)
 library(ggpubr)
 library(GGally)
 
-## see dataplots.R
+## NOTE see dataplots.R
 load(file=here('data/parmkey.Rdata'))
 der <- c(1,11,2, #tx
          4,20,5,3,16, #nh
