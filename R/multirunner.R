@@ -46,15 +46,8 @@ scr <- cor(sampe)
 fno <- glue(here('data/scr_{cniso}.Rdata'))
 save(scr,file=fno)
 
-
-## gpvsc <- 1
+## multiple runs
 test <- sampe[sample(nrow(sampe),300)]
 MR <- multirun(test,estinputs,bothout=TRUE,YR = 2019)
 fno <- glue(here('data/MR_{cniso}.Rdata'))
 save(MR,file=fno)
-
-## BUG
-## Error in rbindlist(ARIA) : 
-##            STRING_PTR() can only be applied to a 'character', not a 'NULL'
-## In addition: There were 50 or more warnings (use warnings() to see the first 50)
-## NOTE probably to do with plotters/out2df

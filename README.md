@@ -55,7 +55,7 @@ which will only keep the most recent file versions, and should allow everything 
 3. Computation of results
     - scripts/MRallPar.sh runs -> R/multirunner.R
     - uses data/sampe*R.data from above
-    - depends {TODO}
+    - depends {R/modelprep.R, R/plotters.R, R/getCountryAimParmsInc.R, R/AIMdynInc.R, R/dataLL.R}
 4. Analysis of results
     - R/resultplots.R
     - uses {data/MR*.Rdata, data/OD*.Rdata} from above

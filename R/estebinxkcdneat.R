@@ -318,7 +318,11 @@ prev65pl <- (sum(DX[14:nage,1:2]) + sum(DA[14:nage,1:2]) + sum(DH[14:nage,1:2]))
 ## arim[,] <- bet * (1/(17)) * (sum(DX[j,])  + sum(DH[j,]) + sum(DA[j,])) / (sum(N[j,])+1e-15) #random mixing
 arim[,] <- bet * MM[i,j] * relinf[j] * (sum(DX[j,])  + sum(DH[j,]) + sum(DA[j,])) / (sum(N[j,])+1e-15)
 ariv[] <- sum(arim[i,])
-aris <- sum(ariv)/(nage) #scalar summary
+ariw[] <- ariv[i]*sum(N[i,])      #weighted by pop group (summed over sex) to get rate of infection in gp i
+aris <- sum(ariw)/poptot #scalar summary for population = mean ari for popn
+## infections from groups
+arimf[,] <- arim[i,j]*sum(N[i,]) #number of infections in i from j
+arif[] <- sum(arimf[,i])         #number of infections from i in total
 
 ## --- which processes to output:
 ## incidence
@@ -360,7 +364,11 @@ output(mortA) <- TRUE
 output(mortFH) <- TRUE
 output(IreactX) <- TRUE
 output(IrelX) <- TRUE
-output(aris) <- TRUE
+
+## these in PR
+## output(aris) <- TRUE
+## output(ariv) <- TRUE
+## output(arif) <- TRUE
 
 
 ## --- ODEs
@@ -512,7 +520,10 @@ dim(hpc) <- c(nage,2)
 dim(apc) <- c(nage,2)
 dim(am) <- c(nage)
 dim(ariv) <- c(nage)
+dim(ariw) <- c(nage)
+dim(arif) <- c(nage)
 dim(arim) <- c(nage,nage)
+dim(arimf) <- c(nage,nage)
 dim(MM) <- c(nage,nage)
 dim(pv) <- c(nage)
 dim(dx) <- c(nage)

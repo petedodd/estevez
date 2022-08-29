@@ -201,11 +201,6 @@ dim(rIX) <- c(nage,2)
 dim(rIH) <- c(nage,2)
 dim(rIA) <- c(nage,2)
 
-output(rIX) <- TRUE
-output(rIH) <- TRUE
-output(rIA) <- TRUE
-
-
 dim(rageXLL) <- c(nage,2)
 dim(rageHLL) <- c(nage,2)
 dim(rageALL) <- c(nage,2)
@@ -223,3 +218,12 @@ dim(rageTX) <- c(nage,2)
 dim(rageTH) <- c(nage,2)
 dim(rageTA) <- c(nage,2)
 
+
+
+## === things to output
+output(rIX) <- TRUE
+output(rIH) <- TRUE
+output(rIA) <- TRUE
+output(aris) <- TRUE
+output(ariv) <- TRUE
+output(arif) <- TRUE
