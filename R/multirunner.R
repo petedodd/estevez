@@ -19,6 +19,8 @@ source(here("R/dataLL.R"))      #for dataLL & prior
 source(here("R/plotters.R"))    #for utilities to grab PR
 load(here('data/irrAOdata.Rdata')) #data for bilinear interpolations
 gh <- function(x) glue(here(x))
+setDTthreads(threads = 1) #because running script already multithreaded - otherwise slower
+
 
 ## set country here
 ## cniso <- 'SWZ'
