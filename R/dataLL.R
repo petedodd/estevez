@@ -141,6 +141,7 @@ qfun <- function(u,L){
   if(names(L)[1]=='shape1') x <- qbeta(u,L[[1]],L[[2]])
   if(names(L)[1]=='mean') x <- qnorm(u,L[[1]],L[[2]])
   if(names(L)[1]=='shape') x <- qgamma(u,L[[1]],scale=L[[2]])
+  if(names(L)[1]=='meanlogit') x <- invlogit(qnorm(u,L[[1]],L[[2]]))
   if(names(L)[1]=='omega') x <- qsn(u,omega=L[[1]],alpha=L[[2]]) #NOTE not used
   x
 }
@@ -174,7 +175,8 @@ hyperparms <- list(
   alph=list(meanlog=-1.02,sdlog=0.219),       #alph: log(.36),sqrt(.048)
   HR=list(meanlog=-1.05,sdlog=0.115),         #rho: HR (ART)
   ## --------------------------------------------------- detection
-  CDR=list(shape1=2,shape2=2),                    #K: CDR baseline
+  ## CDR=list(shape1=2,shape2=2),                    #K: CDR baseline
+  CDR=list(meanlogit=0,sd=0.3),                    #K: CDR baseline
   cdrdt=list(shape=0.5,scale=4e-2),               #c: cdrdt trend NOTE changed
   OR04=list(meanlog=-0.9995206,sdlog=0.6258456),  #OR CDR u5
   OR514=list(meanlog=-0.5668002,sdlog=0.4577016), #OR CDR 514
@@ -190,6 +192,9 @@ hyperparms <- list(
 )
 ## hyperparms <- c(hyperparms,kidhps)
 ig <- list(alpha=5,beta=(5-1)*0.05^2) #NOTE changed
+
+## checker('CDR') # 0.2728954 0.4164789 0.5000000 0.5835211 0.7271046
+## logdfun(0.1,hyperparms[['CDR']]) # 55 -> -3; 22 -> -0.6; -8 with 0.5; -37 with 0.25, -25 with 0.3
 
 
 ## ## --- visual checks ---
@@ -239,6 +244,7 @@ uv2ps <- function(u){
   u
 }
 
+lsqrt2pi <- log(sqrt(2*pi)) #const
 
 logdfun <- function(x,L){
   if(names(L)[1]=='meanlog') y <- dlnorm(x,L[[1]],L[[2]],log = TRUE)
@@ -248,6 +254,7 @@ logdfun <- function(x,L){
   if(names(L)[1]=='omega') y <- dsn(x,omega=L[[1]],
                                     alpha=L[[2]],
                                     log = TRUE)
+  if(names(L)[1]=='meanlogit') y <-  -log(x*(1-x)) - (logit(x) -L[[1]])^2 / (2*L[[2]]^2) - lsqrt2pi
   y
 }
 
