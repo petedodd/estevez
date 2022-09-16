@@ -54,12 +54,14 @@ which will only keep the most recent file versions, and should allow everything 
     - depends {R/modelprep.R, R/plotters.R, R/getCountryAimParmsInc.R, R/AIMdynInc.R, R/dataLL.R}
 3. Computation of results
     - scripts/MRallPar.sh runs -> R/multirunner.R
-    - uses data/sampe*R.data from above
+    - uses data/sampe*.Rdata from above
     - depends {R/modelprep.R, R/plotters.R, R/getCountryAimParmsInc.R, R/AIMdynInc.R, R/dataLL.R}
 4. Analysis of results
     - R/resultplots.R
     - uses {data/MR*.Rdata, data/OD*.Rdata} from above
     - depends {R/modelprep.R, R/plotters.R, R/dataplots.R, R/dataLL.R}
+    - scripts/corners.sh -> R/cornerplots.R
+    - uses data/sampe*.Rdata from above
 
 
 ### Required packages ###
