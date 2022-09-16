@@ -13,7 +13,7 @@ http://creativecommons.org/licenses/by/4.0/
 
 ## Download
 
-The repository is relatively large due to some of the output data.
+The repository is relatively *large* due to some of the output data.
 It might therefore be preferable to download using
 
 ```
@@ -59,14 +59,14 @@ which will only keep the most recent file versions, and should allow everything 
 4. Analysis of results
     - R/resultplots.R
     - uses {data/MR*.Rdata, data/OD*.Rdata} from above
-    - depends {TODO}
+    - depends {R/modelprep.R, R/plotters.R, R/dataplots.R, R/dataLL.R}
 
-TODO list of libraries needed
 
-TODO
+### Required packages ###
 
-- check whont
-- ARIS & ARIA missing from MR output
-- HIV effects check
-- TODO make sure any missing directories are created by scripts
-- continue plotting/result work
+The following R packages are required:
+
+here, data.table, ggplot2, lhs, glue, ggthemes, scales, ggpubr, ggrepel, grid, patchwork, odin, GGally, metafor, reticulate
+
+which may themselves have dependencies. In addition, the python package zeus is required.
+

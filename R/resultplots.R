@@ -194,6 +194,22 @@ ARIA <- rbindlist(ARIA)
 ARIF <- rbindlist(ARIF)
 PR <- rbindlist(PR)
 
+## PR first look
+PRah <- PR[,.(pr=mean(recent/all)),by=.(iso3,hiv,age)]
+PRah$age <- factor(PRah$age,levels=agz,ordered = TRUE)
+
+PRag <- ggplot(PRah[!age %in% agz[1:3]],
+               aes(hiv,pr,col=iso3,group=paste0(iso3,age)))+
+  geom_line()+geom_point()+
+  scale_color_calc()+
+  xlab('HIV')+
+  ylab('Proportion recent incidence 2019')+
+  theme_light()+
+  theme(legend.position = 'top')+
+  facet_wrap(~age,scales='free')
+PRag
+
+
 ## saving out
 fn <- gh('data/ARIS.Rdata') #multirun data
 save(ARIS,file=fn)
@@ -409,9 +425,6 @@ PRtga <- ggplot(PRta,aes(name,mid,ymin=lo,ymax=hi,col=name,shape=hiv))+
   theme(legend.position = 'top')
 
 ## PRtga
-
-ggsave(PRtga,file=gh('plots/resfigs/PRtga.pdf'),w=6,h=6)
-
 
 
 GA2 <- ggarrange(PRtg,PRag,labels=c('A','B'),widths = c(1,3),align='h')
@@ -633,15 +646,17 @@ ggsave(GA,file=glue(here('plots/resfigs/Figure2.pdf')),
 
 ## reorder
 PltList2 <- list()
+cnms <- cnm
+cnms[8] <- 'Tanzania' #otherwise too long
 for(i in 1:6){
   ## top half
-  PltList2[[i]] <- PltList[[(i-1)*5+1]]+ggtitle(cnm[i])
+  PltList2[[i]] <- PltList[[(i-1)*5+1]]+ggtitle(cnms[i])
   PltList2[[6+i]] <- PltList[[(i-1)*5+2]]
   PltList2[[12+i]] <- PltList[[(i-1)*5+3]]
   PltList2[[18+i]] <- PltList[[(i-1)*5+4]]
   PltList2[[24+i]] <- PltList[[(i-1)*5+5]]
   ## bottom half
-  PltList2[[30+i]] <- PltList[[(i-1)*5+31]]+ggtitle(cnm[i+6])
+  PltList2[[30+i]] <- PltList[[(i-1)*5+31]]+ggtitle(cnms[i+6])
   PltList2[[36+i]] <- PltList[[(i-1)*5+32]]
   PltList2[[42+i]] <- PltList[[(i-1)*5+33]]
   PltList2[[48+i]] <- PltList[[(i-1)*5+34]]
@@ -662,6 +677,8 @@ GA2 <- ggarrange(plotlist=PltList2,
                  vjust=1, #+ve -> down
                  labels=lbz2
                 )
+
+GA2 <- GA2 + annotate('segment',x=0,xend=1,y=0.501,yend=0.501,col='black',lwd=1.0)
 
 ggsave(GA2,file=glue(here('plots/figures/Figure2.pdf')),
        w=6*3,

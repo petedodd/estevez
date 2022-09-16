@@ -48,3 +48,4 @@ vignettes/*.pdf
 data/chains
 data/IRRdata
 plots/IRRplots
+plots/corner/*.pdf

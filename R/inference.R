@@ -106,7 +106,7 @@ sampler <- zs$EnsembleSampler(as.integer(nwalkers),
                               LLpsvWithPrior)
 
 ## ---------------------------------------
-## run sampler - shaping to be 10 hrs!
+## run sampler - shaping to be up to 20 hrs or so
 nsteps <- 2000
 tt <- system.time({
   sampler$run_mcmc(start=S,nsteps=as.integer(nsteps))
