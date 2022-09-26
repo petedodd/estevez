@@ -137,6 +137,16 @@ ggsave(HPCu,file=gh('plots/resfigs/HIVinTBu.pdf'),
        w=3*3,
        h=4*3)
 
+## millenium close year
+mcy <- HIVLF[which.min(abs(2000-year)),year]
+(tmph <- HIVLF[year==2019 | year==mcy,
+              .(year,hivintb.mid,
+                hivintb.lo,hivintb.hi),
+              by=.(iso3,year)])
+
+tmph[,mean(hivintb.mid),by=.(year)]
+tmph[year==2019][order(hivintb.mid)]
+
 ## using medians
 tmp <- HIVLF[year==max(year),.(name,hivintb.mid)]
 tmp[,year:=2019]
@@ -207,7 +217,7 @@ PRag <- ggplot(PRah[!age %in% agz[1:3]],
   theme_light()+
   theme(legend.position = 'top')+
   facet_wrap(~age,scales='free')
-PRag
+## PRag
 
 
 ## saving out
@@ -290,8 +300,13 @@ ggsave(ARIAgu,file=gh('plots/resfigs/ARIAgu.pdf'),
        h=4*3)
 
 
-## ARIF graph
+## stats for paper
+ARIA[,mx:=max(mid),by=iso3]
+ARIA[mid==mx][order(mid)]
+ttmp <- ARIF[age %in% c('[25,29)','[30,34)','[35,39)','[40,44)'),1e2*sum(mid),by=iso3]
+ttmp[order(V1)]
 
+## ARIF graph
 ARIFu <- ggplot(ARIF,aes(age,mid,
                          ymin=lo,ymax=hi,
                          fill=name,
@@ -323,6 +338,8 @@ PRt <- PRt[,.(mid=median(recent/all,na.rm=narm),
               hi=quantile(recent/all,0.975,na.rm=narm)),
            by=.(iso3,year)]
 PRt[,hiv:='all']
+PRt[,median(mid)]
+PRt[,mean(mid)]
 
 save(PRt,file=gh('data/PRt.Rdata'))
 
@@ -346,6 +363,10 @@ PRa <- PRa[,.(mid=median(recent/all,na.rm=narm),
 PRa$age <- factor(PRa$age,levels=agz,ordered = TRUE)
 
 save(PRa,file=gh('data/PRa.Rdata'))
+
+## stats
+PRa[,mean(mid),by=age]
+PRa[,median(mid),by=age]
 
 
 ## age version
