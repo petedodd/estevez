@@ -16,7 +16,7 @@ fn <- gh('plots/resfigs')
 if(!file.exists(fn)) dir.create(fn)
 fn <- gh('plots/figures')
 if(!file.exists(fn)) dir.create(fn)
-
+cknz[iso3=='SWZ',name:='Eswatini'] #correct
 
 ## cor stuff
 SCL <- list()
@@ -64,7 +64,7 @@ for(cniso in cz){
                            hivintb=(Ipn+Ipp)/(Itot+1),
                            IRR=(pop15plus/(poph+1)-1) / (Itot/(Ipn+Ipp+1)-1))]
   PCP[[cniso]] <- make.NIPC.plt(cniso,MR$ts,cknz[iso3==cniso,name],
-                                ylb='',xlb='',narm=TRUE) #TODO
+                                ylb='',xlb='',narm=TRUE)
 }
 HIVL <- rbindlist(HIVL)
 HIVL[,IRR:=(pop15plus/(poph+1)-1) / (Itot/(Ipn+Ipp+1)-1)]
@@ -416,6 +416,7 @@ PRt <- merge(PRt,cknz,by='iso3')
 PRtg <- ggplot(PRt,aes(name,mid,ymin=lo,ymax=hi,col=name))+
   geom_errorbar(width=0)+geom_point()+
   scale_y_continuous(label=percent)+
+  scale_x_discrete(limits = rev)+
   scale_color_calc()+
   xlab('Country')+
   ylab('Proportion recent incidence 2019')+
@@ -428,7 +429,6 @@ PRtg <- ggplot(PRt,aes(name,mid,ymin=lo,ymax=hi,col=name))+
 ggsave(PRtg,file=gh('plots/resfigs/PRtg.pdf'),w=6,h=6)
 
 
-## TODO understand
 ## by HIV
 PRh <- PRh[year==2019]
 PRh <- merge(PRh,cknz,by='iso3')
@@ -668,6 +668,7 @@ ggsave(GA,file=glue(here('plots/resfigs/Figure2.pdf')),
 ## reorder
 PltList2 <- list()
 cnms <- cnm
+cnms[7] <- 'Eswatini' #correct
 cnms[8] <- 'Tanzania' #otherwise too long
 for(i in 1:6){
   ## top half
