@@ -13,8 +13,8 @@ nagz <- c('0-4','5-14','15-24','25-34','35-44','45-54','55-64','65+')
 epfac <- 0.83
 
 if(sensitivity.analysis == 'EPTBlo'){
-  cat('---!! setting epfrac to 1.0 !!---\n')
-  epfrac <- 1.0
+  cat('---!! setting epfrac to 0.9 !!---\n')
+  epfrac <- 0.9
 }
 if(sensitivity.analysis == 'EPTBhi'){
   cat('---!! setting epfrac to 0.7 !!---\n')

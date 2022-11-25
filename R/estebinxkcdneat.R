@@ -38,16 +38,19 @@ cfrpp <- user(0.6)  #CFR HIV+ve/ART+ve no ATT
 OR04 <- user()                         #OR CDR u5
 OR514 <- user()                        #OR CDR 514
 pp04 <- user()                         #u5 progn
+rinf1014 <- user(0.0)                  #10-14 year old disease type
 
 ## vector parameters for paediatric sector
 pv[1] <- pp04
 pv[2:nage] <- pp
 dx[1:3] <- 0.5 #6 month duration
 dx[4:nage] <- drnX
+if(rinf1014>0.1) dx[3] <- drnX
 cor[1] <- OR04 #CDR ORs
 cor[2:3] <- OR514
 cor[4:nage] <- 1
-relinf[1:3] <- 0 #relative infectiousness
+relinf[1:2] <- 0 #relative infectiousness
+relinf[3] <- rinf1014
 relinf[4:nage] <- 1
 
 ## dealing with sexes more easily

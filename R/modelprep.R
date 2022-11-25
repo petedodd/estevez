@@ -231,6 +231,13 @@ make.estinputs <- function(aimout,aimpars,contacts=FALSE){
   parms <- c(parms,irrp) #join IRR
   agzm <- 2.5 + seq(from=0,by=5,len=length(agz))
 
+  ## sensitivity analysis for relative infectiousness in 10-14 year olds
+  RI <- 0.0
+  if(sensitivity.analysis=='INF1014'){
+    cat('---!! setting infectiousness in 10-14 yos  to 0.5 !!---\n')
+    RI <- 0.5
+  }
+
   ## CDR over time (ttq)
   parms$CDRdata <- rep(0.6,length(parms$ttq))
   ## NOTE could do via qfun and hyerparms
@@ -253,6 +260,7 @@ make.estinputs <- function(aimout,aimpars,contacts=FALSE){
                OR04=0.4,    #OR CDR u5
                OR514=0.6,   #OR CDR 514
                pp04=0.2,    #u5 progn
+               rinf1014=RI, #10-14 relative infectionsness
                am=agzm)
   parms <- c(parms,tbparz2L)
   if(contacts){
