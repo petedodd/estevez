@@ -7,7 +7,7 @@ source(here('R/argumenthandler.R')) #parse arguments
 useage <- TRUE  #whether to use age-based likelihood or not
 makePR <- FALSE #don't include unnecessary PR ODEs for inference
 
-stop('testing')
+## stop('testing')
 
 ## other libraries/dependencies
 library(here)

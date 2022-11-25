@@ -43,9 +43,9 @@ rinf1014 <- user(0.0)                  #10-14 year old disease type
 ## vector parameters for paediatric sector
 pv[1] <- pp04
 pv[2:nage] <- pp
-dx[1:3] <- 0.5 #6 month duration
+dx[1:2] <- 0.5 #6 month duration
+dx[3] <- if(rinf1014>0.1) drnX else 0.5
 dx[4:nage] <- drnX
-if(rinf1014>0.1) dx[3] <- drnX
 cor[1] <- OR04 #CDR ORs
 cor[2:3] <- OR514
 cor[4:nage] <- 1
