@@ -63,6 +63,9 @@ which will only keep the most recent file versions, and should allow everything 
     - scripts/corners.sh -> R/cornerplots.R
     - uses data/sampe*.Rdata from above
 
+TODO
+include SA flags in step 3 etc
+
 
 ### Required packages ###
 

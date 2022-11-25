@@ -12,6 +12,16 @@ load(here('indata/fitdata/HF.Rdata'))
 nagz <- c('0-4','5-14','15-24','25-34','35-44','45-54','55-64','65+')
 epfac <- 0.83
 
+if(sensitivity.analysis == 'EPTBlo'){
+  cat('---!! setting epfrac to 1.0 !!---\n')
+  epfrac <- 1.0
+}
+if(sensitivity.analysis == 'EPTBhi'){
+  cat('---!! setting epfrac to 0.7 !!---\n')
+  epfrac <- 0.7
+}
+
+
 ## select and aggregate columns for incidence by age
 getRateAge <- function(OM,term="IX|IH|IA"){ #NoN for notifications
   vrz <- grep(term,colnames(OM),value = TRUE)

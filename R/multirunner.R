@@ -1,16 +1,13 @@
 ## to do MR data afterwards
-## read in arguments
+## use:
 ## R --slave --vanilla --args < multirunner.R ETH
-args <- commandArgs(trailingOnly = TRUE)
-cniso <- as.character(args[1])
+library(here)
+source(here('R/argumenthandler.R')) #parse arguments
 
 ## cniso <- 'ETH'
-
-cat('cniso  = ',cniso,'...\n')
 ## stop('testing')
 
 ## neater version of running
-library(here)
 useage <- TRUE #NOTE don't think matters here
 makePR <- TRUE #whether to include PR code or not
 tgt <- 'c'
@@ -40,16 +37,16 @@ OD <- out2df(out)
 save(OD,file=gh('data/OD_{cniso}.Rdata'))
 
 ## read in and save out
-fno <- glue(here('data/sampe_{cniso}.Rdata'))
+fno <- glue(here('data/sampe_{cniso}{sensitivity.analysis}.Rdata'))
 load(file=fno)
 
 ## correlations
 scr <- cor(sampe)
-fno <- glue(here('data/scr_{cniso}.Rdata'))
+fno <- glue(here('data/scr_{cniso}{sensitivity.analysis}.Rdata'))
 save(scr,file=fno)
 
 ## multiple runs
 test <- sampe[sample(nrow(sampe),300)]
 MR <- multirun(test,estinputs,bothout=TRUE,YR = 2019)
-fno <- glue(here('data/MR_{cniso}.Rdata'))
+fno <- glue(here('data/MR_{cniso}{sensitivity.analysis}.Rdata'))
 save(MR,file=fno)

@@ -1,15 +1,15 @@
-## read in arguments
+## use:
 ## R --slave --vanilla --args < inference.R ZWE
-args <- commandArgs(trailingOnly = TRUE)
-cniso <- as.character(args[1])
+library(here)
+source(here('R/argumenthandler.R')) #parse arguments
+
 
 useage <- TRUE  #whether to use age-based likelihood or not
 makePR <- FALSE #don't include unnecessary PR ODEs for inference
 
-cat('cniso  = ',cniso,'...\n')
-## stop('testing')
+stop('testing')
 
-## libraries/dependencies
+## other libraries/dependencies
 library(here)
 library(reticulate)
 zs <- import('zeus')
@@ -113,7 +113,7 @@ tt <- system.time({
 })
 
 ## save stats
-catfn <- glue(here('plots/stats_{cniso}.txt'))
+catfn <- glue(here('plots/stats_{cniso}{sensitivity.analysis}.txt'))
 stats <- c(time=tt[3]/60,ESS=sampler$ess)
 cat(stats,file=catfn,append = FALSE);cat("\n",file=catfn,append = TRUE)
 
@@ -122,11 +122,11 @@ sampe <- sampler$get_chain(flat=TRUE,discard=as.integer(nsteps/2))
 sampe <- as.data.table(sampe)
 lbz <- names(hyperparms)
 names(sampe)[1:length(lbz)] <- lbz
-fno <- glue(here('data/sampe_{cniso}.Rdata'))
+fno <- glue(here('data/sampe_{cniso}{sensitivity.analysis}.Rdata'))
 save(sampe,file=fno)   ## save out
 
 ## save arrays also
-fno <- glue(here('data/chains/CH_{cniso}.Rdata'))
+fno <- glue(here('data/chains/CH_{cniso}{sensitivity.analysis}.Rdata'))
 CH <- sampler$chain
 if(!file.exists(here('data/chains'))) dir.create(here('data/chains'))
 save(CH,file=fno)   ## save out
