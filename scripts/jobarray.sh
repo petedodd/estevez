@@ -10,6 +10,6 @@ key=(ETH KEN LSO MOZ MWI NGA SWZ TZA UGA ZAF ZMB ZWE) # country key
 iso=${key[$SLURM_ARRAY_TASK_ID-1]}                    # as iso3
 # R --slave --vanilla --args < ../R/inference.R $iso    # run
 # sensitivity analyses
-R --slave --vanilla --args < ../R/inference.R $iso EPTBlo
+# R --slave --vanilla --args < ../R/inference.R $iso EPTBlo
 # R --slave --vanilla --args < ../R/inference.R $iso EPTBhi
-# R --slave --vanilla --args < ../R/inference.R $iso INF1014
+R --slave --vanilla --args < ../R/inference.R $iso INF1014
