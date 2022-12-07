@@ -1,6 +1,7 @@
 library(here)
 library(glue)
 
+sensitivity.analysis <- ''
 useage <- TRUE #NOTE needs changing as beta prior is different
 makePR <- TRUE
 gh <- function(x) glue(here(x))
@@ -702,12 +703,58 @@ GA2 <- ggarrange(plotlist=PltList2,
 
 GA2 <- GA2 + annotate('segment',x=0,xend=1,y=0.501,yend=0.501,col='black',lwd=1.0)
 
-ggsave(GA2,file=glue(here('plots/figures/Figure2.pdf')),
+ggsave(GA2,file=glue(here('plots/figures/Figure2_nolegend.pdf')),
        w=6*3,
        h=10*3)
 
 
 
 
+## reorder version with legend
 
+lbz3 <- rep(NA,66)
+lbz3[c(1,37)] <- 'A)';
+lbz3[c(1,37)+6] <- 'B)'
+lbz3[c(1,37)+12] <- 'C)'
+lbz3[c(1,37)+18] <- 'D)'
+lbz3[c(1,37)+24] <- 'E)'
+
+PltList3 <- list()
+for(i in 1:30) PltList3[[i]] <- PltList2[[i]]
+for(i in 1:30) PltList3[[36+i]] <- PltList2[[30+i]]
+
+
+leg0 <- ggplot() + annotate(geom='text',x=0,y=0,label='LEGENDS:',fontface='bold')+theme_void()
+legbb <- legb1+legb2
+legcc <- legc1+legc2
+legaa <- lega+lega2
+PltList3[[31]] <- leg0
+PltList3[[32]] <- legaa
+PltList3[[33]] <- legbb
+PltList3[[34]] <- legcc
+PltList3[[35]] <- legd1
+PltList3[[36]] <- legd2
+
+GA3 <- ggarrange(plotlist=PltList3,
+                 ncol=6,nrow=11,
+                 hjust=0, #-ve -> R
+                 vjust=1, #+ve -> down
+                 labels=lbz3
+                 )
+
+sx <- 1/6
+el <- 1/11
+dd <- el/5
+
+GG <- GA3 +
+  annotate("rect",xmin=0.9*sx,xmax=2*sx,ymin=5*el+dd,ymax=6*el-dd,alpha=0,col=1,size=1) +
+  annotate("rect",xmin=2*sx,xmax=3*sx,ymin=5*el+dd,ymax=6*el-dd,alpha=0,col=1,size=1) +
+  annotate("rect",xmin=3*sx,xmax=4*sx,ymin=5*el+dd,ymax=6*el-dd,alpha=0,col=1,size=1) +
+  annotate("rect",xmin=4*sx,xmax=5.8*sx,ymin=5*el+dd,ymax=6*el-dd,alpha=0,col=1,size=1)
+## GG
+
+
+ggsave(GG,file=glue(here('plots/figures/Figure2.pdf')),
+       w=6*3,
+       h=10.8*3)
 

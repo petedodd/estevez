@@ -71,7 +71,7 @@ include SA flags in step 3 etc
 
 The following R packages are required:
 
-here, data.table, ggplot2, lhs, glue, ggthemes, scales, ggpubr, ggrepel, grid, patchwork, odin, GGally, metafor, reticulate
+here, data.table, ggplot2, lhs, glue, ggthemes, scales, ggpubr, ggrepel, grid, patchwork, odin, GGally, metafor, reticulate, ggnewscale
 
 which may themselves have dependencies. In addition, the python package zeus is required.
 

@@ -183,6 +183,28 @@ make.poph.plt <- function(cniso,  #country
   Dt
 }
 
+## for legend
+lls <- c('Total population','People living with HIV','People with HIV on ART')
+AtmpD <- data.table(x=rep(c(0,1),3),y=rep(1:3,each=2),`A)`=rep(lls,each=2))
+AtmpD$`A)` <- factor(AtmpD$`A)`,levels = lls,ordered = TRUE)
+GL <- ggplot(AtmpD,aes(x,y,col=`A)`))+geom_point(shape=1)+geom_line()+
+  scale_color_manual(values=c('black','red','green')) +
+  theme(legend.title = element_text(face = "bold"))
+lega <- as_ggplot(get_legend(GL))
+
+lls <- c('Data','Model')
+Atmp <- data.table(x=rep(c(0,1),2),y=rep(1:2,each=2),v1='Model',v2='Data')
+GL <- ggplot(Atmp,aes(x,y))+geom_point(aes(col=v2),shape=1)+
+  scale_color_manual(values=c('Data'='black')) +
+  ggnewscale::new_scale_color() +
+  geom_line(aes(col=v1))+
+  scale_color_manual(values=c('Model'='black')) +
+  theme(legend.title = element_blank())
+lega2 <- as_ggplot(get_legend(GL))
+
+
+
+
 ## ## ## -----------------
 
 ## prepOD(MR$ts[id==1],cniso)$popsr
@@ -229,7 +251,19 @@ make.popsnap.plt <- function(cniso,OD){
 
 ## make.poph.plt(cniso,MR$ts[id==1])
 ## ## make.popsnap.plt(cniso,OD)
+## for legend
+lls <- c('Male population','Female population')
+BtmpD <- data.table(x=c(0,1),y=rep(1,each=2),`model:`=rep(lls,each=2),type=NA)
+BA <- ggplot(BtmpD,aes(x,y,fill=`model:`))+geom_bar(stat='identity')+
+  scale_fill_discrete(name='model:\n\n')
 
+legb2 <- as_ggplot(get_legend(BA))
+B2 <- data.table(x=c(0,1),y=rep(1,each=2),type='UN data')
+BB <- ggplot(B2,aes(x,y)) +
+  geom_point(aes(col=type),shape=1) +
+  scale_color_manual(name='B)\n\n\n',values=c('black')) +
+  theme(legend.title = element_text(face = "bold"))
+legb1 <- as_ggplot(get_legend(BB))
 
 ## === prevalence
 make.prev.plt <- function(cniso,MR,na.rm=FALSE){
@@ -265,6 +299,23 @@ make.prev.plt <- function(cniso,MR,na.rm=FALSE){
   Pplt
 }
 
+## legend stuff
+tmpd <- data.table(x=c(0,1),y=c(0,1))
+tmpd[,c('ymin','ymax','f','v'):=.(c(-0.1,0.9),c(0.1,1.1),'Prevalence data',
+                                  'TB prevalence')]
+tmp <- ggplot(data=tmpd,aes(x=x,y=y,ymin=ymin,ymax=ymax,col=f))+
+  geom_pointrange()+
+  scale_color_manual(name='C)\n\n\n',values = 'purple') +
+  theme(legend.title = element_text(face = "bold"))
+legc1 <- as_ggplot(get_legend(tmp))
+tmp <- ggplot(data=tmpd,aes(x=x,y=y,ymin=ymin,ymax=ymax,fill=v,col=v))+
+  geom_line()+ geom_ribbon(alpha=0.2,col=NA)+
+  scale_fill_manual(name='model:\n\n\n',values = 'purple')+
+  scale_color_manual(name='model:\n\n\n',values = 'purple')
+legc2 <- as_ggplot(get_legend(tmp))
+
+
+
 ## ## make.prev.plt(cniso,MR$ts)
 
 ## ## ========  Age patterns
@@ -298,6 +349,37 @@ make.Age.inc.plt <- function(cniso,MR,narm=FALSE){
           axis.text.x = element_text(angle = 45, vjust = 1.0, hjust=1))
   Plt
 }
+
+
+## legend stuff
+tmpd <- data.table(x=c(0,1,2),y=c(0,1,2))
+tmpd[,v:=c('TB notifications','TB/HIV notifications','TB/HIV/ART notifications' )]
+tmp <- ggplot(data=tmpd,aes(x=x,y=y,col=v))+
+  geom_point(shape=1)+
+  scale_color_manual(name='D) & E)',values = c('black','red','green')) +
+  theme(legend.title = element_text(face = "bold"))
+legd1 <- as_ggplot(get_legend(tmp))
+
+
+tmpd <- data.table(x=rep(0:2,3),y=rep(0:2,3))
+tmpd[,v:=rep(c('TB notifications','TB/HIV notifications','TB incidence'),each=3)]
+tmpd[,c('ymin','ymax'):=.(0.9*y,1.1*y)]
+
+tmp <- ggplot(data=tmpd,aes(x=x,y=y,
+                            ymin=ymin,ymax=ymax,
+                            fill=v,col=v,group=v))+
+  geom_line()+geom_ribbon(alpha=0.2,color=NA)+
+  scale_fill_manual(name='model:',
+                    values = c('TB incidence'='blue',
+                               'TB notifications'='black','TB/HIV notifications'='red'))+
+  scale_color_manual(name='model:',
+                    values = c('TB incidence'='blue',
+                               'TB notifications'='black','TB/HIV notifications'='red'))
+##   theme(legend.title = element_text(face = "bold"))
+
+legd2 <- as_ggplot(get_legend(tmp))
+
+
 
 
 ## ## make.Age.inc.plt(cniso,MR$ss)
