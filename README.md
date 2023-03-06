@@ -1,5 +1,10 @@
 # estevez
 
+Code and data for:
+
+Transmission modeling to infer tuberculosis incidence prevalence and mortality in settings with generalized HIV epidemics
+
+Peter J. Dodd, Debebe Shaweno, Chu-Chang Ku, Philippe Glaziou, Carel Pretorius, Richard J. Hayes, Peter MacPherson, Ted Cohen, and Helen Ayles
 
 
 ## License
@@ -63,8 +68,8 @@ which will only keep the most recent file versions, and should allow everything 
     - scripts/corners.sh -> R/cornerplots.R
     - uses data/sampe*.Rdata from above
 
-TODO
-include SA flags in step 3 etc
+
+Sensitivity analyses are handled via flags: see SA flags in step 3 and associated bash scripts.
 
 
 ### Required packages ###
