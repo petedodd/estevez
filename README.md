@@ -1,5 +1,7 @@
 # estevez
 
+[![DOI](https://zenodo.org/badge/513460672.svg)](https://zenodo.org/badge/latestdoi/513460672)
+
 Code and data for:
 
 Transmission modeling to infer tuberculosis incidence prevalence and mortality in settings with generalized HIV epidemics
