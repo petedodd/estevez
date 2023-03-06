@@ -98,7 +98,7 @@ MRTS <- MRTS[,.(iso3,id,t,Itot,mort,prev)]
 MRTS <- melt(MRTS,id=c('t','id','iso3'))
 MRTS <- MRTS[,HML(value),by=.(t,iso3,variable)]
 
-save(MRTS,file=gh('data/MRTS.Rdata')) #edit?
+save(MRTS,file=gh('data/MRTS.Rdata')) #
 
 
 MRTS[,year:=floor(t)]
@@ -467,9 +467,9 @@ PRtg <- PRtg + expand_limits(y=0.5)
 PRtg <- PRtg+ylab(nttl)
 PRag <- PRag+ylab(nttl)
 
-GA1 <- ggarrange(HPC,labels='A')
-GA3 <- ggarrange(ARIAg,ARIFg,labels=c('B','C'),widths = c(1,1),align='h')
-GA2 <- ggarrange(PRtg,PRag,labels=c('D','E'),widths = c(1,1),align='h')
+GA1 <- ggarrange(HPC,labels='a')#,font.label = list(face='bold'))
+GA3 <- ggarrange(ARIAg,ARIFg,labels=c('b','c'),widths = c(1,1),align='h')
+GA2 <- ggarrange(PRtg,PRag,labels=c('d','e'),widths = c(1,1),align='h')
 GA4a <- GA1/GA3/GA2
 
 ggsave(GA4a,file=gh('plots/figures/Figure5.pdf'),w=13,h=18)
