@@ -185,9 +185,9 @@ make.poph.plt <- function(cniso,  #country
 
 ## for legend
 lls <- c('Total population','People living with HIV','People with HIV on ART')
-AtmpD <- data.table(x=rep(c(0,1),3),y=rep(1:3,each=2),`A)`=rep(lls,each=2))
-AtmpD$`A)` <- factor(AtmpD$`A)`,levels = lls,ordered = TRUE)
-GL <- ggplot(AtmpD,aes(x,y,col=`A)`))+geom_point(shape=1)+geom_line()+
+AtmpD <- data.table(x=rep(c(0,1),3),y=rep(1:3,each=2),`a`=rep(lls,each=2))
+AtmpD$`a` <- factor(AtmpD$`a`,levels = lls,ordered = TRUE)
+GL <- ggplot(AtmpD,aes(x,y,col=`a`))+geom_point(shape=1)+geom_line()+
   scale_color_manual(values=c('black','red','green')) +
   theme(legend.title = element_text(face = "bold"))
 lega <- as_ggplot(get_legend(GL))
@@ -261,7 +261,7 @@ legb2 <- as_ggplot(get_legend(BA))
 B2 <- data.table(x=c(0,1),y=rep(1,each=2),type='UN data')
 BB <- ggplot(B2,aes(x,y)) +
   geom_point(aes(col=type),shape=1) +
-  scale_color_manual(name='B)\n\n\n',values=c('black')) +
+  scale_color_manual(name='b\n\n\n',values=c('black')) +
   theme(legend.title = element_text(face = "bold"))
 legb1 <- as_ggplot(get_legend(BB))
 
@@ -305,7 +305,7 @@ tmpd[,c('ymin','ymax','f','v'):=.(c(-0.1,0.9),c(0.1,1.1),'Prevalence data',
                                   'TB prevalence')]
 tmp <- ggplot(data=tmpd,aes(x=x,y=y,ymin=ymin,ymax=ymax,col=f))+
   geom_pointrange()+
-  scale_color_manual(name='C)\n\n\n',values = 'purple') +
+  scale_color_manual(name='c\n\n\n',values = 'purple') +
   theme(legend.title = element_text(face = "bold"))
 legc1 <- as_ggplot(get_legend(tmp))
 tmp <- ggplot(data=tmpd,aes(x=x,y=y,ymin=ymin,ymax=ymax,fill=v,col=v))+
@@ -356,7 +356,7 @@ tmpd <- data.table(x=c(0,1,2),y=c(0,1,2))
 tmpd[,v:=c('TB notifications','TB/HIV notifications','TB/HIV/ART notifications' )]
 tmp <- ggplot(data=tmpd,aes(x=x,y=y,col=v))+
   geom_point(shape=1)+
-  scale_color_manual(name='D) & E)',values = c('black','red','green')) +
+  scale_color_manual(name='d & e',values = c('black','red','green')) +
   theme(legend.title = element_text(face = "bold"))
 legd1 <- as_ggplot(get_legend(tmp))
 

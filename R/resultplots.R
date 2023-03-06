@@ -688,11 +688,11 @@ for(i in 1:6){
 
 
 lbz2 <- rep(NA,60)
-lbz2[c(1,31)] <- 'A)';
-lbz2[c(1,31)+6] <- 'B)'
-lbz2[c(1,31)+12] <- 'C)'
-lbz2[c(1,31)+18] <- 'D)'
-lbz2[c(1,31)+24] <- 'E)'
+lbz2[c(1,31)] <- 'a';
+lbz2[c(1,31)+6] <- 'b'
+lbz2[c(1,31)+12] <- 'c'
+lbz2[c(1,31)+18] <- 'd'
+lbz2[c(1,31)+24] <- 'e'
 
 GA2 <- ggarrange(plotlist=PltList2,
                  ncol=6,nrow=10,
@@ -713,17 +713,17 @@ ggsave(GA2,file=glue(here('plots/figures/Figure2_nolegend.pdf')),
 ## reorder version with legend
 
 lbz3 <- rep(NA,66)
-lbz3[c(1,37)] <- 'A)';
-lbz3[c(1,37)+6] <- 'B)'
-lbz3[c(1,37)+12] <- 'C)'
-lbz3[c(1,37)+18] <- 'D)'
-lbz3[c(1,37)+24] <- 'E)'
+lbz3[c(1,37)] <- 'a';
+lbz3[c(1,37)+6] <- 'b'
+lbz3[c(1,37)+12] <- 'c'
+lbz3[c(1,37)+18] <- 'd'
+lbz3[c(1,37)+24] <- 'e'
 
 PltList3 <- list()
 for(i in 1:30) PltList3[[i]] <- PltList2[[i]]
 for(i in 1:30) PltList3[[36+i]] <- PltList2[[30+i]]
 
-
+## legb1 etc defined in dataplots.R
 leg0 <- ggplot() + annotate(geom='text',x=0,y=0,label='LEGENDS:',fontface='bold')+theme_void()
 legbb <- legb1+legb2
 legcc <- legc1+legc2
