@@ -8,6 +8,8 @@ Transmission modeling to infer tuberculosis incidence prevalence and mortality i
 
 Peter J. Dodd, Debebe Shaweno, Chu-Chang Ku, Philippe Glaziou, Carel Pretorius, Richard J. Hayes, Peter MacPherson, Ted Cohen, and Helen Ayles
 
+https://www.nature.com/articles/s41467-023-37314-1
+
 
 ## License
 
